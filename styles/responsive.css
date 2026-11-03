@@ -1,0 +1,438 @@
+/* Shared responsive layout for the terminal, neon, and professional themes. */
+@media (max-width: 1023px) {
+  html,
+  body {
+    width: 100%;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    height: 100vh;
+    height: 100dvh;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .frame-toggle-bar {
+    position: relative;
+    inset: auto;
+    z-index: 220;
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: calc(6px + env(safe-area-inset-top)) 10px 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  .frame-toggle-bar::-webkit-scrollbar { display: none; }
+  .frame-toggle-btn { flex: 0 0 auto; white-space: nowrap; }
+
+  .theme-switcher {
+    flex: 0 0 auto;
+    margin-left: 0 !important;
+    padding-left: 7px !important;
+  }
+
+  .device-wrapper.desktop-app-shell {
+    width: 100%;
+    min-width: 0 !important;
+    max-width: none;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    flex: 1 1 auto;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .hub-viewport {
+    display: flex;
+    width: 100%;
+    min-width: 0 !important;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  .hub-top-hud {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 58px;
+    flex: 0 0 auto;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .hud-brand { min-width: 0; flex: 1 1 auto; gap: 8px; }
+  .hud-title-wrap { min-width: 0; }
+  .hud-main-title { font-size: 11px; letter-spacing: 1.4px; }
+  .hud-sub-title { font-size: 8px; letter-spacing: .5px; }
+  .hud-stats-group { flex: 0 0 auto; gap: 5px; }
+  .hud-chip { padding: 4px 6px; font-size: 10px; }
+  .hud-settings-btn { min-width: 38px; min-height: 38px; padding: 4px 7px; }
+
+  .hud-announcement-bar {
+    grid-column: auto;
+    grid-row: auto;
+    min-width: 0;
+    padding: 6px 10px;
+  }
+
+  .announcement-text { min-width: 0; }
+
+  .hub-scroll-content {
+    grid-column: auto;
+    grid-row: auto;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+    padding: 14px 12px;
+    overscroll-behavior-y: contain;
+  }
+
+  .bottom-nav {
+    position: relative;
+    inset: auto;
+    grid-column: auto;
+    grid-row: auto;
+    width: 100%;
+    height: calc(64px + env(safe-area-inset-bottom));
+    min-height: 64px;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 0;
+    padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
+    border: 0 !important;
+    border-top: 1px solid var(--border-primary-dim, rgba(100, 200, 230, .25)) !important;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, .24);
+  }
+
+  .bottom-nav::before { display: none; }
+
+  .nav-item {
+    width: 20%;
+    min-width: 0;
+    min-height: 48px;
+    flex: 1 1 20%;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    padding: 4px 2px;
+    border: 0;
+    border-top: 2px solid transparent;
+    border-left: 0;
+    border-radius: 0;
+    font-size: 8px;
+    letter-spacing: .35px;
+    white-space: nowrap;
+    touch-action: manipulation;
+  }
+
+  .nav-item .nav-icon { width: auto; margin: 0; font-size: 17px; }
+  .nav-item.active { border: 0; border-top: 2px solid var(--term-green, #42e8ff); border-radius: 0; }
+
+  .tactical-levels-viewport {
+    width: 100%;
+    min-width: 0;
+    padding: 18px 12px 22px;
+  }
+
+  .tactical-screen-header { margin-bottom: 12px; }
+  .tactical-subtitle { font-size: 11px; line-height: 1.5; }
+
+  .tactical-hud-frame {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "tab preview"
+      "cards cards"
+      "status progress"
+      "dots dots";
+    align-items: center;
+    gap: 12px 8px;
+    padding: 14px;
+  }
+
+  .hud-top-tab {
+    position: static;
+    grid-area: tab;
+    justify-self: start;
+    padding: 5px 10px;
+  }
+
+  .hud-preview-block {
+    position: static;
+    grid-area: preview;
+    justify-self: end;
+    max-width: 100%;
+    padding: 4px 0;
+  }
+
+  .preview-lvl-id { font-size: 9px; }
+  .preview-lvl-name { max-width: 100%; overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+  .hud-side-margin, .hex-watermark { display: none; }
+
+  .hud-cards-grid {
+    grid-area: cards;
+    min-width: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: auto;
+    gap: 10px;
+  }
+
+  .hud-level-card { min-width: 0; min-height: 150px; }
+  .card-mission-title { overflow-wrap: anywhere; }
+
+  .hud-bottom-left-info {
+    position: static;
+    grid-area: status;
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .hud-status-text { font-size: 8px; letter-spacing: .35px; overflow-wrap: anywhere; }
+
+  .hud-progress-block {
+    position: static;
+    grid-area: progress;
+    min-width: 0;
+    justify-self: end;
+    gap: 6px;
+  }
+
+  .hud-progress-bar-wrap { width: clamp(56px, 18vw, 110px); }
+  .hud-pagination-dots {
+    position: static;
+    grid-area: dots;
+    justify-self: center;
+    transform: none;
+    gap: 4px;
+  }
+
+  .hud-pagination-dots .hud-dot {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .hud-pagination-dots .hud-dot::before {
+    width: 8px;
+    height: 8px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    background: transparent;
+    content: "";
+  }
+
+  .hud-pagination-dots .hud-dot.active::before {
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  .tactical-back-btn { min-height: 40px; margin-top: 10px; }
+
+  .game-top-bar {
+    display: grid;
+    min-width: 0;
+    min-height: 0;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 8px 10px;
+    padding: 9px 12px;
+  }
+
+  .game-top-bar > .exit-game-btn { grid-column: 1; grid-row: 1; min-height: 40px; white-space: nowrap; }
+  .mission-live-heading { grid-column: 2; grid-row: 1; gap: 7px; }
+  .mission-live-pill { padding: 6px 8px; font-size: 8px; }
+  .mission-live-title { font-size: 12px; }
+
+  .mission-live-telemetry {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .mission-clock-group { gap: 10px; }
+  .mission-clock-group > div { min-width: 60px; }
+  .mission-speed-control { min-width: 74px; padding-left: 8px; }
+  .mission-speed-control select { min-width: 74px; }
+
+  .game-viewport, #gameArenaSlot { min-width: 0; min-height: 0; }
+  #gameArenaSlot > .game-stage { width: 100%; max-width: 100%; padding: 12px; }
+  .mobile-touch-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 10px;
+    width: min(100%, 420px);
+    margin: 0 auto;
+  }
+
+  .mobile-touch-controls button {
+    min-width: 0;
+    min-height: 46px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-primary-dim, rgba(100, 200, 230, .35));
+    background: rgba(14, 31, 51, .78);
+    color: var(--text-primary, #e6edf3);
+    font: 700 12px var(--terminal-mono-font, monospace);
+    touch-action: manipulation;
+  }
+
+  .mobile-touch-controls button:active { transform: scale(.97); }
+
+  .admin-viewport { min-width: 0; overflow-x: hidden; padding: 12px; }
+  .admin-top-bar { min-width: 0; flex-wrap: wrap; gap: 10px; }
+  .admin-brand { min-width: 0; flex: 1 1 150px; }
+  .admin-actions { flex-wrap: wrap; }
+  .admin-nav-tabs { min-width: 0; max-width: 100%; overscroll-behavior-x: contain; }
+  .adm-card-header { flex-wrap: wrap; gap: 8px; }
+  .adm-table-wrap { max-width: 100%; overscroll-behavior-x: contain; }
+  .admin-customizer-grid { grid-template-columns: minmax(0, 1fr) !important; }
+
+  .briefing-modal-overlay,
+  .result-overlay-modal,
+  .app-inspect-modal,
+  .admin-modal-overlay {
+    position: fixed;
+    inset: 0;
+    padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .briefing-modal-card,
+  .result-card,
+  .modal-card,
+  .admin-modal-card,
+  .settings-modal-card {
+    width: 100%;
+    max-width: 100% !important;
+    max-height: calc(100dvh - 20px);
+    margin: auto 0;
+    padding: 16px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #certificateViewContainer { min-width: 0; padding: 12px; }
+  #certificateViewContainer > div:first-child { max-width: 100% !important; flex-wrap: wrap; gap: 8px; }
+  .cert-canvas-frame, .cert-actions-row { max-width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .frame-toggle-bar { min-height: 48px; gap: 5px; padding-right: 8px; padding-left: 8px; }
+  .frame-toggle-btn { padding: 6px 8px; font-size: 9px; }
+  .theme-switcher { gap: 4px !important; padding-left: 6px !important; }
+  .theme-switcher span { font-size: 9px !important; }
+  .theme-switcher select { max-width: 122px; padding: 5px 6px !important; font-size: 10px !important; }
+  .auth-viewport { padding: 18px 12px; }
+  .retro-login-window, .auth-glass-card { padding: 24px 18px 20px; }
+
+  .hub-top-hud { min-height: 54px; padding: 7px 9px; }
+  .hud-logo-icon { font-size: 18px; }
+  .hud-main-title { font-size: 10px; letter-spacing: 1px; }
+  .hud-sub-title { font-size: 7px; letter-spacing: .2px; }
+  .hud-stats-group { gap: 4px; }
+  .hud-chip { gap: 3px; padding: 4px 5px; font-size: 9px; }
+  .hud-settings-btn { min-width: 36px; min-height: 36px; }
+  .hub-scroll-content { padding: 12px 9px; }
+  .nav-item { font-size: 7px; letter-spacing: 0; }
+  .nav-item .nav-icon { font-size: 16px; }
+
+  .tactical-levels-viewport { padding: 14px 9px 18px; }
+  .tactical-hud-title { font-size: 19px; letter-spacing: 2px; }
+  .tactical-hud-frame { gap: 9px 6px; padding: 10px; }
+  .hud-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .hud-level-card { min-height: 132px; aspect-ratio: 1.1; padding: 12px 8px 9px; }
+  .card-num-badge { top: 7px; left: 7px; }
+  .card-center-hex { width: 42px; height: 42px; }
+  .level-emblem { font-size: 19px; }
+  .card-mission-title { font-size: 11px; }
+  .card-mission-codename { font-size: 7px; letter-spacing: .2px; }
+  .hud-bottom-left-info { gap: 4px; }
+  .hud-status-text { font-size: 7px; }
+  .hud-progress-block { gap: 4px; }
+  .hud-hex-progress-badge { width: 24px; height: 24px; }
+  .hud-progress-bar-wrap { width: clamp(48px, 17vw, 76px); }
+  .hud-progress-label { font-size: 7px; }
+
+  .game-top-bar { gap: 7px 8px; padding: 8px 9px; }
+  .exit-game-btn { padding: 6px 8px; font-size: 9px; letter-spacing: .5px; }
+  .mission-live-pill { gap: 5px; padding: 5px 6px; font-size: 7px; letter-spacing: .4px; }
+  .mission-live-title { font-size: 10px; }
+  .mission-clock-group { gap: 7px; }
+  .mission-clock-group > div { min-width: 52px; }
+  .mission-clock-group small { font-size: 7px; letter-spacing: .3px; }
+  .mission-clock-group strong { font-size: 10px; }
+  .mission-speed-control { min-width: 68px; padding-left: 6px; }
+  .mission-speed-control small { font-size: 7px; }
+  .mission-speed-control select { min-width: 68px; padding: 6px 5px; font-size: 8px; }
+
+  #gameArenaSlot > .game-stage { gap: 9px; padding: 10px; }
+  .game-stage > .level-badge-header { flex-wrap: wrap; gap: 7px; padding: 9px 10px; }
+  .game-stage > .game-instruction { font-size: 11px; line-height: 1.5; }
+  .game-stage button, .game-stage select, .game-stage input { max-width: 100%; }
+  .sky-arena { height: clamp(220px, 34dvh, 320px); min-height: 220px; }
+  .platformer-arena { height: clamp(220px, 32dvh, 310px); min-height: 220px; }
+
+  .admin-viewport { padding: 9px; }
+  .admin-top-bar { padding: 10px; }
+  .admin-brand .title { font-size: 12px; letter-spacing: 1px; }
+  .admin-brand .sub { font-size: 8px; }
+  .admin-actions { gap: 5px; }
+  .adm-card { padding: 10px; }
+
+  .briefing-modal-overlay,
+  .result-overlay-modal,
+  .app-inspect-modal,
+  .admin-modal-overlay { padding-right: 8px; padding-left: 8px; }
+
+  .briefing-modal-card,
+  .result-card,
+  .modal-card,
+  .admin-modal-card,
+  .settings-modal-card { padding: 13px; }
+
+  #certificateViewContainer { padding: 8px; }
+  #certificateViewContainer > div:first-child { justify-content: space-between; }
+}
+
+@media (max-width: 360px) {
+  .hud-sub-title { max-width: 135px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hud-chip { padding: 3px 4px; }
+  .hud-settings-btn { min-width: 34px; }
+  .nav-item { font-size: 6px; }
+  .hud-progress-block { justify-self: stretch; }
+  .hud-progress-bar-wrap { width: 48px; }
+  .mission-live-telemetry { align-items: flex-start; }
+  .mission-speed-control { min-width: 64px; }
+  .mission-speed-control select { min-width: 64px; }
+}
+
+@media (min-width: 1024px) {
+  .mobile-touch-controls { display: none; }
+}

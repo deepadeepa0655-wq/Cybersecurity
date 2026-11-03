@@ -1,0 +1,452 @@
+/* ==========================================================================
+   CYBER SHIELD — PROFESSIONAL ANIMATION SYSTEM
+   High-performance, declarative CSS animations for enterprise security interfaces
+   Matches theme-cybersec-pro.css color palette (Security Green, Amber, Threat Red, Info Blue)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. KEYFRAME DEFINITIONS
+   -------------------------------------------------------------------------- */
+
+/* Security Pulse - Subtle Green Glow */
+@keyframes secPulse {
+  0%, 100% {
+    box-shadow: 0 0 8px var(--sec-green-dim), inset 0 0 6px var(--sec-green-dim);
+    border-color: var(--border-primary-dim);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--sec-green-glow), 0 0 30px var(--sec-green-glow), inset 0 0 12px var(--sec-green-dim);
+    border-color: var(--sec-green);
+  }
+}
+
+/* Terminal Flicker - Classic CRT Style */
+@keyframes termFlicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px var(--term-green));
+  }
+  20%, 24%, 55% {
+    opacity: 0.6;
+    filter: none;
+  }
+}
+
+/* Security Glitch - Subtle Chromatic Aberration */
+@keyframes secGlitch {
+  0% { transform: translate(0); text-shadow: none; }
+  15% { transform: translate(-1px, 1px); text-shadow: 1px 0 var(--threat-red), -1px 0 var(--info-blue); }
+  30% { transform: translate(1px, -1px); text-shadow: -1px 0 var(--threat-red), 1px 0 var(--info-blue); }
+  45% { transform: translate(-1px, -1px); text-shadow: 1px 0 var(--violet), -1px 0 var(--term-green); }
+  50% { transform: translate(1px, 1px); text-shadow: -1px 0 var(--threat-red), 1px 0 var(--sec-green); }
+  75%, 100% { transform: translate(0); text-shadow: none; }
+}
+
+/* Error Shake - Threat Red */
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  15%, 45%, 75% { transform: translateX(-6px); box-shadow: 0 0 16px var(--threat-red-glow); border-color: var(--threat-red) !important; }
+  30%, 60%, 90% { transform: translateX(6px); box-shadow: 0 0 16px var(--threat-red-glow); border-color: var(--threat-red) !important; }
+}
+
+/* Success Pop - Security Green */
+@keyframes popSuccess {
+  0% { transform: scale(0.94); }
+  45% { transform: scale(1.06); }
+  70% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+/* Celebration Tada */
+@keyframes tadaCelebrate {
+  0% { transform: scale(1); }
+  10%, 20% { transform: scale(0.94) rotate(-2deg); }
+  30%, 50%, 70%, 90% { transform: scale(1.06) rotate(2deg); }
+  40%, 60%, 80% { transform: scale(1.06) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Levitating Float - Gentle */
+@keyframes floatBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Radar Sweep */
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Hologram Shimmer */
+@keyframes hologramShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Shield Deflect Wave */
+@keyframes shieldDeflectWave {
+  0% { box-shadow: 0 0 0 0 var(--sec-green-glow); filter: brightness(1); }
+  50% { box-shadow: 0 0 24px 8px var(--sec-green-dim); filter: brightness(1.2); }
+  100% { box-shadow: 0 0 40px 16px transparent; filter: brightness(1); }
+}
+
+/* Scanline Sweep */
+@keyframes scanlineSweep {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* Terminal Typing Cursor */
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Entrance Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes zoomOut {
+  from { opacity: 0; transform: scale(1.08); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Staggered Entrance for Lists/Grids */
+@keyframes staggerIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --------------------------------------------------------------------------
+   2. DECLARATIVE CSS UTILITY CLASSES (Zero-Code Animation)
+   -------------------------------------------------------------------------- */
+
+/* Continuous Looping Effects */
+.anim-sec-pulse { animation: secPulse 3s infinite ease-in-out; }
+.anim-term-flicker { animation: termFlicker 4s infinite; }
+.anim-float { animation: floatBob 4s infinite ease-in-out; }
+.anim-radar { animation: radarSweep 6s linear infinite; transform-origin: center center; }
+.anim-sec-glitch-loop { animation: secGlitch 4s infinite ease; }
+.anim-hologram {
+  background: linear-gradient(90deg, transparent 0%, var(--sec-green-dim) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: hologramShimmer 3s infinite;
+}
+.anim-scanline::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, var(--sec-green-dim) 50%);
+  background-size: 100% 4px;
+  animation: scanlineSweep 2s linear infinite;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* One-Shot Action Feedback Effects */
+.anim-shake { animation: shakeError 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+.anim-pop { animation: popSuccess 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
+.anim-tada { animation: tadaCelebrate 0.7s ease both; }
+.anim-shield-deflect { animation: shieldDeflectWave 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.anim-sec-glitch { animation: secGlitch 0.35s ease both; }
+
+/* Entrance Animations */
+.anim-fade-in { animation: fadeIn 0.3s ease-out both; }
+.anim-slide-up { animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-slide-down { animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-slide-in-right { animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-slide-in-left { animation: slideInLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-zoom-in { animation: zoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-zoom-out { animation: zoomOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Stagger Delays for Grid/Lists */
+.delay-1 { animation-delay: 50ms; }
+.delay-2 { animation-delay: 100ms; }
+.delay-3 { animation-delay: 150ms; }
+.delay-4 { animation-delay: 200ms; }
+.delay-5 { animation-delay: 250ms; }
+.delay-6 { animation-delay: 300ms; }
+.delay-7 { animation-delay: 350ms; }
+.delay-8 { animation-delay: 400ms; }
+.delay-9 { animation-delay: 450ms; }
+.delay-10 { animation-delay: 500ms; }
+
+/* Stagger Entrance for Lists */
+.stagger-children > * { animation: staggerIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.stagger-children > *:nth-child(1) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 250ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 350ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 400ms; }
+
+/* --------------------------------------------------------------------------
+   3. MICRO-INTERACTION HOVER & FOCUS UTILITIES
+   -------------------------------------------------------------------------- */
+
+.hover-lift {
+  transition: transform var(--transition-fast) cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow var(--transition-fast) ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.hover-glow {
+  transition: box-shadow var(--transition-normal) ease,
+              border-color var(--transition-normal) ease,
+              filter var(--transition-normal) ease;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 16px var(--sec-green-glow);
+  border-color: var(--border-primary) !important;
+  filter: brightness(1.05);
+}
+
+.hover-glow-amber:hover {
+  box-shadow: 0 0 16px var(--amber-glow);
+  border-color: var(--border-warning) !important;
+}
+
+.hover-glow-red:hover {
+  box-shadow: 0 0 16px var(--threat-red-glow);
+  border-color: var(--border-threat) !important;
+}
+
+.hover-expand {
+  transition: transform var(--transition-fast) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.hover-expand:hover { transform: scale(1.03); }
+.hover-expand:active { transform: scale(0.97); }
+
+/* Terminal-style cursor */
+.terminal-cursor::after {
+  content: '_';
+  animation: cursorBlink 1s infinite;
+  margin-left: 2px;
+  color: var(--term-green);
+}
+
+/* --------------------------------------------------------------------------
+   4. TOAST HUD NOTIFICATION DOCK
+   -------------------------------------------------------------------------- */
+
+.toast-dock {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  width: calc(100vw - 40px);
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(12px);
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  box-shadow: var(--shadow-lg);
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast.success { border-left: 4px solid var(--sec-green); }
+.toast.error { border-left: 4px solid var(--threat-red); }
+.toast.warning { border-left: 4px solid var(--amber); }
+.toast.info { border-left: 4px solid var(--info-blue); }
+
+.toast-icon { flex-shrink: 0; font-size: 18px; }
+.toast.success .toast-icon { color: var(--sec-green); filter: drop-shadow(0 0 4px var(--sec-green-glow)); }
+.toast.error .toast-icon { color: var(--threat-red); filter: drop-shadow(0 0 4px var(--threat-red-glow)); }
+.toast.warning .toast-icon { color: var(--amber); filter: drop-shadow(0 0 4px var(--amber-glow)); }
+.toast.info .toast-icon { color: var(--info-blue); filter: drop-shadow(0 0 4px var(--info-blue-glow)); }
+
+.toast-content { flex: 1; min-width: 0; }
+.toast-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; font-family: 'Space Grotesk', monospace; }
+.toast-message { font-size: 12px; color: var(--text-secondary); }
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+.toast-close:hover { color: var(--threat-red); }
+
+.toast-fadeout {
+  opacity: 0 !important;
+  transform: translateX(100%) scale(0.95) !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. FULLSCREEN CANVAS OVERLAYS (CONFETTI & DIGITAL RAIN)
+   -------------------------------------------------------------------------- */
+
+.confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99999;
+}
+
+.matrix-rain-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.08;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   6. LOADING SPINNERS
+   -------------------------------------------------------------------------- */
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-secondary);
+  border-top-color: var(--sec-green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner-sm { width: 16px; height: 16px; border-width: 1.5px; }
+.spinner-lg { width: 32px; height: 32px; border-width: 3px; }
+
+.spinner-ring {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid transparent;
+  border-top-color: var(--sec-green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.dots-loader {
+  display: inline-flex;
+  gap: 4px;
+}
+.dots-loader span {
+  width: 8px;
+  height: 8px;
+  background: var(--sec-green);
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+.dots-loader span:nth-child(1) { animation-delay: -0.32s; }
+.dots-loader span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* --------------------------------------------------------------------------
+   7. PROGRESS BAR ANIMATIONS
+   -------------------------------------------------------------------------- */
+
+.progress-bar-animated {
+  background: linear-gradient(90deg, var(--sec-green), var(--sec-green-bright), var(--sec-green));
+  background-size: 200% 100%;
+  animation: progressShimmer 1.5s linear infinite;
+}
+
+@keyframes progressShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* --------------------------------------------------------------------------
+   8. ACCESSIBILITY OVERRIDE (Respect User Reduced-Motion Preferences)
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. CYBER TOAST JS INTEGRATION HELPERS
+   -------------------------------------------------------------------------- */
+
+/* These classes are applied by CyberFX.toast() JS function */
+.cyber-toast-enter { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cyber-toast-exit { animation: slideOutRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* --------------------------------------------------------------------------
+   10. FOCUS RING FOR KEYBOARD NAVIGATION
+   -------------------------------------------------------------------------- */
+
+*:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--info-blue);
+  outline-offset: 2px;
+}

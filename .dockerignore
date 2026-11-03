@@ -1,0 +1,61 @@
+# =============================================================================
+# Cyber Shield Platform - Docker Ignore Rules
+# Optimizes build context and reduces image size
+# =============================================================================
+
+# Git
+.git
+.github
+
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Never send local secrets to the Docker build context.
+.env*
+
+# IDE & Editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Testing
+coverage
+.nyc_output
+
+# Documentation
+README.md
+verify.py
+
+# Docker
+Dockerfile
+docker-compose.yml
+.docker
+
+# Nginx config (not needed in app container)
+nginx/
+
+# Mongo init scripts (not needed in app container)
+mongo-init/
+
+# PM2 config (not needed in container)
+ecosystem.config.js
+
+# Misc
+*.pem
+.cache
+.eslintcache
+*.md
+!.gitignore

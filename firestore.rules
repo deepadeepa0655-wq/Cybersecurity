@@ -1,0 +1,212 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function validAgentProfile() {
+      return request.resource.data.keys().hasOnly([
+          'uid', 'agentName', 'avatar', 'leaderboardId', 'score', 'lives', 'unlockedLevel',
+          'completedLevels', 'achievements', 'registeredAt', 'lastLogin', 'rankTitle'
+        ])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.agentName is string
+        && request.resource.data.agentName.matches('^[A-Za-z0-9_]{3,20}$')
+        && request.resource.data.agentName.size() >= 3
+        && request.resource.data.agentName.size() <= 20
+        && request.resource.data.avatar is string
+        && request.resource.data.avatar.size() <= 8
+        && request.resource.data.avatar in ['🥷', '🦊', '⚡', '🛡️', '👁️']
+        && request.resource.data.leaderboardId is string
+        && request.resource.data.leaderboardId.matches('^[a-f0-9]{48}$')
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 100000
+        && request.resource.data.lives is int
+        && request.resource.data.lives >= 0
+        && request.resource.data.lives <= 10
+        && request.resource.data.unlockedLevel is int
+        && request.resource.data.unlockedLevel >= 1
+        && request.resource.data.unlockedLevel <= 9
+        && request.resource.data.completedLevels is list
+        && request.resource.data.completedLevels.size() <= 8
+        && request.resource.data.achievements is list
+        && request.resource.data.achievements.size() <= 8
+        && request.resource.data.rankTitle is string
+        && request.resource.data.rankTitle.size() <= 40
+        && ((request.resource.data.score >= 1800 && request.resource.data.rankTitle == 'Cyber Hero')
+          || (request.resource.data.score >= 1000 && request.resource.data.score < 1800 && request.resource.data.rankTitle == 'Safety Star')
+          || (request.resource.data.score >= 400 && request.resource.data.score < 1000 && request.resource.data.rankTitle == 'Quest Explorer')
+          || (request.resource.data.score < 400 && request.resource.data.rankTitle == 'Cyber Explorer'));
+    }
+
+    function validAgentProgressUpdate() {
+      let previousLevels = resource.data.completedLevels;
+      let nextLevels = request.resource.data.completedLevels;
+      return (
+          nextLevels.size() == previousLevels.size()
+          && nextLevels.hasAll(previousLevels)
+          && request.resource.data.unlockedLevel == resource.data.unlockedLevel
+          && request.resource.data.score == resource.data.score
+        ) || (
+          nextLevels.size() == previousLevels.size() + 1
+          && nextLevels.hasAll(previousLevels)
+          && nextLevels.hasAny([resource.data.unlockedLevel])
+          && !previousLevels.hasAny([resource.data.unlockedLevel])
+          && request.resource.data.unlockedLevel == resource.data.unlockedLevel + 1
+          && request.resource.data.score > resource.data.score
+          && request.resource.data.score <= resource.data.score + 1000
+        ) || (
+          (resource.data.unlockedLevel > 9 || previousLevels.size() > 8)
+          && request.resource.data.unlockedLevel == 9
+          && request.resource.data.score == resource.data.score
+        );
+    }
+
+    function validAgentIdentityUpdate() {
+      return request.resource.data.agentName == resource.data.agentName
+        && (!resource.data.keys().hasAny(['leaderboardId'])
+          || request.resource.data.leaderboardId == resource.data.leaderboardId)
+        && (!resource.data.keys().hasAny(['registeredAt'])
+          || request.resource.data.registeredAt == resource.data.registeredAt);
+    }
+
+    match /admins/{adminId} {
+      allow read: if signedIn() && request.auth.uid == adminId;
+      allow create, update, delete: if false;
+    }
+
+    match /agents/{agentId} {
+      allow read: if signedIn() && (request.auth.uid == agentId || isAdmin());
+      allow create: if signedIn()
+        && request.auth.uid == agentId
+        && validAgentProfile()
+        && request.resource.data.score == 0
+        && request.resource.data.unlockedLevel == 1
+        && request.resource.data.completedLevels.size() == 0;
+      allow update: if signedIn()
+        && request.auth.uid == agentId
+        && validAgentProfile()
+        && validAgentIdentityUpdate()
+        && validAgentProgressUpdate()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'uid', 'agentName', 'avatar', 'leaderboardId', 'score', 'lives', 'unlockedLevel',
+          'completedLevels', 'achievements', 'registeredAt', 'lastLogin',
+          'rankTitle', 'password', 'isAdmin'
+        ]);
+      allow delete: if false;
+    }
+
+    function validPublicScore(publicId) {
+      return signedIn() && validPublicScoreForUser(publicId, request.auth.uid);
+    }
+
+    function validPublicScoreForUser(publicId, agentId) {
+      let profilePath = /databases/$(database)/documents/agents/$(agentId);
+      return exists(profilePath)
+        && request.resource.data.keys().hasOnly([
+          'agentName', 'score', 'level', 'completed', 'avatar', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'agentName', 'score', 'level', 'completed', 'avatar', 'updatedAt'
+        ])
+        && get(profilePath).data.leaderboardId == publicId
+        && request.resource.data.agentName is string
+        && request.resource.data.agentName.matches('^[A-Za-z0-9_]{3,20}$')
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 100000
+        && request.resource.data.level is int
+        && request.resource.data.level >= 1
+        && request.resource.data.level <= 9
+        && request.resource.data.completed is int
+        && request.resource.data.completed >= 0
+        && request.resource.data.completed <= 8
+        && request.resource.data.avatar is string
+        && request.resource.data.avatar.size() <= 8
+        && request.resource.data.agentName == get(profilePath).data.agentName
+        && request.resource.data.score == get(profilePath).data.score
+        && request.resource.data.level == get(profilePath).data.unlockedLevel
+        && request.resource.data.completed == get(profilePath).data.completedLevels.size()
+        && request.resource.data.avatar == get(profilePath).data.avatar
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function validQuestion(questionId) {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['id', 'levelId', 'question', 'options', 'answer', 'explanation'])
+        && data.keys().hasAll(['id', 'levelId', 'question', 'options', 'answer', 'explanation'])
+        && data.id == questionId
+        && questionId.matches('^q_[A-Za-z0-9_-]{1,60}$')
+        && data.levelId is int
+        && data.levelId >= 1
+        && data.levelId <= 8
+        && data.question is string
+        && data.question.size() >= 1
+        && data.question.size() <= 300
+        && data.options is list
+        && data.options.size() == 4
+        && data.options[0] is string
+        && data.options[0].size() >= 1
+        && data.options[0].size() <= 180
+        && data.options[1] is string
+        && data.options[1].size() >= 1
+        && data.options[1].size() <= 180
+        && data.options[2] is string
+        && data.options[2].size() >= 1
+        && data.options[2].size() <= 180
+        && data.options[3] is string
+        && data.options[3].size() >= 1
+        && data.options[3].size() <= 180
+        && data.answer is int
+        && data.answer >= 0
+        && data.answer <= 3
+        && data.explanation is string
+        && data.explanation.size() <= 400;
+    }
+
+    match /public_scores/{publicId} {
+      allow get: if signedIn();
+      allow list: if signedIn() && request.query.limit != null && request.query.limit <= 15;
+      allow create, update: if validPublicScore(publicId);
+      allow delete: if false;
+    }
+
+    match /questions/{questionId} {
+      allow get: if true;
+      allow list: if request.query.limit != null && request.query.limit <= 100;
+      allow create, update: if isAdmin() && validQuestion(questionId);
+      allow delete: if isAdmin();
+    }
+
+    match /levels/{levelId} {
+      allow get: if true;
+      allow list: if request.query.limit != null && request.query.limit <= 8;
+      allow create, update, delete: if isAdmin()
+        && levelId in ['1', '2', '3', '4', '5', '6', '7', '8'];
+    }
+
+    match /system_config/{configId} {
+      allow get: if configId == 'branding';
+      allow list: if false;
+      allow create, update: if isAdmin() && configId == 'branding';
+      allow delete: if false;
+    }
+
+    match /activity_logs/{logId} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "cyber-shield-platform",
+  "version": "2.0.0",
+  "description": "CyberQuest — short, playful online-safety games for kids with an animated welcome and mobile-friendly controls",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "keywords": [
+    "cybersecurity",
+    "node",
+    "express",
+    "animations",
+    "games",
+    "mobile",
+    "kids-online-safety"
+  ],
+  "author": "Cyber Shield Team",
+  "license": "MIT"
+}

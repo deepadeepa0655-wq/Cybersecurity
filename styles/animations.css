@@ -1,0 +1,397 @@
+/* ==========================================================================
+   CYBER SHIELD — LESS-CODING ANIMATION SYSTEM (GPU-ACCELERATED)
+   High-performance, declarative CSS animations for cyberpunk & security interfaces.
+   Apply these classes to ANY element to animate without writing extra code!
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. KEYFRAME DEFINITIONS
+   -------------------------------------------------------------------------- */
+
+/* Cyber Aura Pulse */
+@keyframes cyberPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.35), inset 0 0 8px rgba(0, 229, 255, 0.15);
+    border-color: rgba(0, 229, 255, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(0, 229, 255, 0.8), 0 0 40px rgba(176, 38, 255, 0.35), inset 0 0 16px rgba(0, 229, 255, 0.35);
+    border-color: #00e5ff;
+  }
+}
+
+/* Neon Sign Flicker */
+@keyframes neonFlicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px var(--cyan, #00e5ff));
+  }
+  20%, 24%, 55% {
+    opacity: 0.45;
+    filter: none;
+  }
+}
+
+/* Cybernetic Glitch (Chromatic Aberration & Slice) */
+@keyframes glitchText {
+  0% {
+    transform: translate(0);
+    text-shadow: none;
+  }
+  15% {
+    transform: translate(-2px, 1px);
+    text-shadow: 2px 0 rgba(255, 56, 96, 0.85), -2px 0 rgba(0, 229, 255, 0.85);
+  }
+  30% {
+    transform: translate(2px, -1px);
+    text-shadow: -2px 0 rgba(255, 56, 96, 0.85), 2px 0 rgba(0, 229, 255, 0.85);
+  }
+  45% {
+    transform: translate(-1px, -1px);
+    text-shadow: 1px 0 rgba(176, 38, 255, 0.85), -1px 0 rgba(0, 229, 255, 0.85);
+  }
+  50% {
+    transform: translate(1px, 2px);
+    text-shadow: -1px 0 rgba(255, 56, 96, 0.75), 1px 0 rgba(57, 255, 20, 0.75);
+  }
+  75%, 100% {
+    transform: translate(0);
+    text-shadow: none;
+  }
+}
+
+/* Error Alert Shake */
+@keyframes shakeError {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  15%, 45%, 75% {
+    transform: translateX(-8px);
+    box-shadow: 0 0 22px rgba(255, 56, 96, 0.85);
+    border-color: #ff3860 !important;
+  }
+  30%, 60%, 90% {
+    transform: translateX(8px);
+    box-shadow: 0 0 22px rgba(255, 56, 96, 0.85);
+    border-color: #ff3860 !important;
+  }
+}
+
+/* Bouncy Pop Scale */
+@keyframes popSuccess {
+  0% {
+    transform: scale(0.92);
+  }
+  45% {
+    transform: scale(1.08);
+  }
+  70% {
+    transform: scale(0.98);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Tada Celebrate */
+@keyframes tadaCelebrate {
+  0% { transform: scale(1); }
+  10%, 20% { transform: scale(0.92) rotate(-3deg); }
+  30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+  40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Levitating Float */
+@keyframes floatBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Radar Sweep */
+@keyframes radarSweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hologram Shimmer */
+@keyframes hologramShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Shield Deflect Wave */
+@keyframes shieldDeflectWave {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.75);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 0 30px 12px rgba(0, 240, 255, 0.4);
+    filter: brightness(1.3);
+  }
+  100% {
+    box-shadow: 0 0 50px 24px rgba(0, 240, 255, 0);
+    filter: brightness(1);
+  }
+}
+
+/* Generic Entrances */
+@keyframes animFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes animSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes animSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes animZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. DECLARATIVE CSS UTILITY CLASSES (Zero-Code Animation)
+   -------------------------------------------------------------------------- */
+
+/* Continuous Looping Effects */
+.anim-cyber-pulse {
+  animation: cyberPulse 2.4s infinite ease-in-out;
+}
+
+.anim-neon-flicker {
+  animation: neonFlicker 3s infinite;
+}
+
+.anim-float {
+  animation: floatBob 3.5s infinite ease-in-out;
+}
+
+.anim-radar {
+  animation: radarSweep 4s linear infinite;
+  transform-origin: center center;
+}
+
+.anim-glitch-loop {
+  animation: glitchText 3s infinite ease;
+}
+
+.anim-hologram {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(0, 240, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: hologramShimmer 2.5s infinite;
+}
+
+/* One-Shot Action Feedback Effects */
+.anim-shake {
+  animation: shakeError 0.45s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.anim-pop {
+  animation: popSuccess 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+.anim-tada {
+  animation: tadaCelebrate 0.8s ease both;
+}
+
+.anim-shield-deflect {
+  animation: shieldDeflectWave 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.anim-glitch {
+  animation: glitchText 0.4s ease both;
+}
+
+/* Entrance Animations */
+.anim-fade-in {
+  animation: animFadeIn 0.35s ease-out both;
+}
+
+.anim-slide-up {
+  animation: animSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.anim-slide-down {
+  animation: animSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.anim-zoom-in {
+  animation: animZoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Stagger Delays for Grid items */
+.delay-1 { animation-delay: 60ms; }
+.delay-2 { animation-delay: 120ms; }
+.delay-3 { animation-delay: 180ms; }
+.delay-4 { animation-delay: 240ms; }
+.delay-5 { animation-delay: 300ms; }
+
+/* --------------------------------------------------------------------------
+   3. MICRO-INTERACTION HOVER & FOCUS UTILITIES
+   -------------------------------------------------------------------------- */
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 240, 255, 0.25);
+}
+
+.hover-glow {
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, filter 0.25s ease;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.6);
+  border-color: var(--cyan, #00f0ff) !important;
+  filter: brightness(1.1);
+}
+
+.hover-expand {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.hover-expand:hover {
+  transform: scale(1.04);
+}
+.hover-expand:active {
+  transform: scale(0.96);
+}
+
+/* --------------------------------------------------------------------------
+   4. CYBER TOAST HUD NOTIFICATION DOCK
+   -------------------------------------------------------------------------- */
+.cyber-toast-dock {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 380px;
+  width: calc(100vw - 36px);
+  pointer-events: none;
+}
+
+.cyber-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(10, 14, 26, 0.96);
+  border-radius: 10px;
+  border: 1px solid var(--cyan, #00e5ff);
+  backdrop-filter: blur(14px);
+  color: #e6f1ff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 229, 255, 0.4);
+  animation: animSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.cyber-toast.toast-danger {
+  border-color: #ff3860;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 18px rgba(255, 56, 96, 0.55);
+}
+.cyber-toast.toast-danger .toast-icon { color: #ff3860; filter: drop-shadow(0 0 6px #ff3860); }
+
+.cyber-toast.toast-success {
+  border-color: #39ff14;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 18px rgba(57, 255, 20, 0.55);
+}
+.cyber-toast.toast-success .toast-icon { color: #39ff14; filter: drop-shadow(0 0 6px #39ff14); }
+
+.cyber-toast.toast-warning {
+  border-color: #b026ff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 18px rgba(176, 38, 255, 0.55);
+}
+.cyber-toast.toast-warning .toast-icon { color: #b026ff; filter: drop-shadow(0 0 6px #b026ff); }
+
+.cyber-toast.toast-info {
+  border-color: #00e5ff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 18px rgba(0, 229, 255, 0.55);
+}
+.cyber-toast.toast-info .toast-icon { color: #00e5ff; filter: drop-shadow(0 0 6px #00e5ff); }
+
+.cyber-toast-fadeout {
+  opacity: 0 !important;
+  transform: translateY(-14px) scale(0.95) !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. FULLSCREEN CANVAS OVERLAYS (CONFETTI & DIGITAL RAIN)
+   -------------------------------------------------------------------------- */
+.cyber-confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99999;
+}
+
+.matrix-canvas-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.18;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   6. ACCESSIBILITY OVERRIDE (Respect User Reduced-Motion Preferences)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,296 @@
+/* ==========================================================================
+   CYBER SHIELD — TERMINAL ANIMATION SYSTEM
+   Matrix-style terminal animations matching terminal.css palette
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   KEYFRAME DEFINITIONS
+   -------------------------------------------------------------------------- */
+
+/* Matrix Pulse - Subtle Green Glow */
+@keyframes matrixPulse {
+  0%, 100% {
+    box-shadow: 0 0 6px var(--term-green-dim), inset 0 0 4px var(--term-green-dim);
+    border-color: var(--border-primary-dim);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--term-green-glow), 0 0 35px var(--term-green-glow), inset 0 0 12px var(--term-green-dim);
+    border-color: var(--term-green);
+  }
+}
+
+/* Terminal Flicker - CRT Style */
+@keyframes termFlicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px var(--term-green));
+  }
+  20%, 24%, 55% {
+    opacity: 0.6;
+    filter: none;
+  }
+}
+
+//* Security Glitch - Chromatic Aberration */
+@keyframes secGlitch {
+  0% { transform: translate(0); text-shadow: none; }
+  15% { transform: translate(-1px, 1px); text-shadow: 1px 0 var(--threat-red), -1px 0 var(--info-blue); }
+  30% { transform: translate(1px, -1px); text-shadow: -1px 0 var(--threat-red), 1px 0 var(--info-blue); }
+  45% { transform: translate(-1px, -1px); text-shadow: 1px 0 var(--violet), -1px 0 var(--term-green); }
+  50% { transform: translate(1px, 1px); text-shadow: -1px 0 var(--threat-red), 1px 0 var(--sec-green); }
+  75%, 100% { transform: translate(0); text-shadow: none; }
+}
+
+/* Error Shake - Threat Red */
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  15%, 45%, 75% { transform: translateX(-6px); box-shadow: 0 0 16px var(--threat-red-glow); border-color: var(--threat-red) !important; }
+  30%, 60%, 90% { transform: translateX(6px); box-shadow: 0 0 16px var(--threat-red-glow); border-color: var(--threat-red) !important; }
+}
+
+/* Success Pop - Security Green */
+@keyframes popSuccess {
+  0% { transform: scale(0.94); }
+  45% { transform: scale(1.06); }
+  70% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+/* Celebration Tada */
+@keyframes tadaCelebrate {
+  0% { transform: scale(1); }
+  10%, 20% { transform: scale(0.94) rotate(-2deg); }
+  30%, 50%, 70%, 90% { transform: scale(1.06) rotate(2deg); }
+  40%, 60%, 80% { transform: scale(1.06) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Levitating Float - Gentle */
+@keyframes floatBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Radar Sweep */
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Hologram Shimmer */
+@keyframes hologramShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Shield Deflect Wave */
+@keyframes shieldDeflectWave {
+  0% { box-shadow: 0 0 0 0 var(--sec-green-glow); filter: brightness(1); }
+  50% { box-shadow: 0 0 24px 8px var(--sec-green-dim); filter: brightness(1.2); }
+  100% { box-shadow: 0 0 40px 16px transparent; filter: brightness(1); }
+}
+
+/* Scanline Sweep */
+@keyframes scanlineSweep {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* Terminal Typing Cursor */
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Entrance Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Typewriter effect */
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Glowing pulse for accent elements */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 8px var(--term-green-dim); }
+  50% { box-shadow: 0 0 25px var(--term-green-glow), 0 0 5px var(--term-green-bright); }
+}
+
+/* --------------------------------------------------------------------------
+   APPLY ANIMATION CLASSES
+   -------------------------------------------------------------------------- */
+
+.matrix-pulse {
+  animation: matrixPulse 2s ease-in-out infinite;
+}
+
+.term-flicker {
+  animation: termFlicker 0.8s ease-in-out infinite;
+}
+
+.glitch {
+  animation: secGlitch 0.5s ease-in-out infinite;
+}
+
+.shake-error {
+  animation: shakeError 0.4s ease-in-out;
+}
+
+.pop-success {
+  animation: popSuccess 0.3s ease-out;
+}
+
+.tada-celebrate {
+  animation: tadaCelebrate 0.8s ease-out;
+}
+
+.float-bob {
+  animation: floatBob 3s ease-in-out infinite;
+}
+
+.radar-sweep {
+  animation: radarSweep 2s linear infinite;
+}
+
+.hologram-shimmer {
+  animation: hologramShimmer 3s linear infinite;
+}
+
+.shield-deflect {
+  animation: shieldDeflectWave 1s ease-out;
+}
+
+.scanline-sweep {
+  animation: scanlineSweep 2s linear infinite;
+}
+
+.cursor-blink {
+  animation: cursorBlink 1s infinite;
+}
+
+.glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Typewriter effect */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid var(--term-green);
+  white-space: nowrap;
+  animation: typewriter 3s steps(40, end) infinite;
+}
+
+/* Security pulse button */
+.security-pulse-btn {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   TERMINAL INPUT & OUTPUT STYLES
+   --------------------------------------------------------------------------- */
+
+.terminal-output {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary-dim);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  color: var(--text-primary);
+  font-family: var(--terminal-mono-font), monospace;
+  font-size: 12px;
+  line-height: var(--terminal-line-height);
+  white-space: pre;
+  overflow-x: auto;
+  min-height: 80px;
+  margin-bottom: 12px;
+}
+
+.terminal-input {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary-dim);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-family: var(--terminal-mono-font), monospace;
+  font-size: 13px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.terminal-input:focus {
+  outline: none;
+  border-color: var(--term-green);
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.3);
+}
+
+/* Typing cursor in input */
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1em;
+  background: var(--term-green);
+  margin-left: 4px;
+  animation: cursorBlink 1s infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Status badges
+   -------------------------------------------------------------------------- */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary-dim);
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.status-badge.secure {
+  --term-green: #3fb950;
+}
+
+.status-badge.warning {
+  --term-green: #ffbe0b;
+}
+
+.status-badge.threat {
+  --term-green: #ff3860;
+}
+
+/* --------------------------------------------------------------------------
+   Loading spinner
+   -------------------------------------------------------------------------- */
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--border-primary-dim);
+  border-top-color: var(--term-green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

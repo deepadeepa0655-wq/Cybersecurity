@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(head -50)",
+      "PowerShell(Get-ChildItem -Force \"C:\\\\Cyber Security\" -Recurse | Where-Object { $_.Extension -in '.html','.css','.js' } | Select-Object FullName, Length | Select-Object -First 60)",
+      "PowerShell(head -20)"
+    ]
+  }
+}
