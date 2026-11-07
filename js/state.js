@@ -54,19 +54,19 @@ const AppState = (function() {
     },
     {
       id: 4,
-      name: "Virus File Hunt",
-      codename: "Spot unsafe files",
+      name: "Virus Attack – Stop the Spread",
+      codename: "Virus Outbreak Defense",
       icon: "🦠",
-      theme: "blue",
-      accent: "#39c7ff",
-      goal: "Find the suspicious files and keep the computer safe.",
-      tip: "Only open files from people and places you trust.",
+      theme: "red",
+      accent: "#ff1744",
+      goal: "Defend the 4×4 grid! Use Antivirus, Firewall, Freeze, and Cleaner to stop the spread.",
+      tip: "Viruses spread to adjacent nodes after every move. Block paths early with Firewalls!",
       clearReward: 350,
-      defaultTime: "02:30",
+      defaultTime: "03:00",
       briefing: {
-        threat: "Some files can carry harmful software.",
-        defense: "Check with a trusted adult before opening an unexpected file.",
-        rule: "Do not download surprise attachments."
+        threat: "Viruses rapidly replicate and infect adjacent network nodes.",
+        defense: "Deploy firewalls to block propagation; use freeze and cleaners to neutralize clusters.",
+        rule: "Eliminate all infected nodes before the network is compromised."
       }
     },
     {
@@ -105,19 +105,19 @@ const AppState = (function() {
     },
     {
       id: 7,
-      name: "Password Power-Up",
-      codename: "Pick the strongest",
-      icon: "🛡️",
-      theme: "blue",
-      accent: "#39c7ff",
-      goal: "Choose the strongest password for a made-up game character.",
-      tip: "Never use real names, birthdays, or other personal details.",
+      name: "Password Guessing Game",
+      codename: "Social Password Defense",
+      icon: "🔓",
+      theme: "purple",
+      accent: "#b026ff",
+      goal: "Analyze the person's profile and identify which password is most vulnerable to being guessed.",
+      tip: "Never use your name, birthday, phone number, or favourite things in passwords!",
       clearReward: 350,
       defaultTime: "02:30",
       briefing: {
-        threat: "Guessable details can make passwords easier to crack.",
-        defense: "Make up a long password that is not about you.",
-        rule: "Keep real personal details out of passwords."
+        threat: "Attackers harvest personal details to guess passwords with targeted dictionaries.",
+        defense: "Create strong passwords completely detached from names, birthdays, or pets.",
+        rule: "Keep personal information out of passwords."
       }
     },
     {

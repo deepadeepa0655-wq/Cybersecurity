@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com/firebasejs/ 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.firebase.com wss://*.firebaseio.com; img-src 'self' data: https:; frame-src 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="theme-color" content="#07111e">
+  <meta name="description" content="CyberQuest — short, playful games that help kids stay safer online.">
+  <title>CyberQuest — Play · Learn · Stay Safe</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Original Neon Cyberpunk Theme (alternate) -->
+  <link rel="alternate stylesheet" id="theme-neon" title="neon" href="styles/main.css">
+  <link rel="alternate stylesheet" id="animations-neon" title="neon" href="styles/animations.css">
+
+  <!-- Professional Cyber Security Theme (alternate) -->
+  <link rel="alternate stylesheet" id="theme-pro" title="professional" href="styles/theme-cybersec-pro.css">
+  <link rel="alternate stylesheet" id="animations-pro" title="professional" href="styles/animations-pro.css">
+
+  <!-- Terminal / Matrix Theme (DEFAULT) -->
+  <link rel="stylesheet" id="theme-terminal" href="styles/terminal.css">
+  <link rel="stylesheet" id="animations-terminal" href="styles/animations-terminal.css">
+
+  <!-- Shared responsive layout overrides (kept active for every theme) -->
+  <link rel="stylesheet" href="styles/responsive.css">
+  <link rel="stylesheet" href="styles/experience.css">
+  <link rel="stylesheet" href="styles/cyberquest.css">
+
+  <!-- Validation & Game Customization Inline Styles -->
+  <style>
+    /* Form Validation Visual Feedback */
+    .cyber-input-row.validation-error {
+      border-color: #ff3333 !important;
+      box-shadow: 0 0 12px rgba(255, 51, 51, 0.4), inset 0 0 6px rgba(255, 51, 51, 0.15) !important;
+      animation: shakeField 0.35s ease-in-out;
+    }
+    .cyber-input-row.validation-success {
+      border-color: #00ff41 !important;
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.3), inset 0 0 6px rgba(0, 255, 65, 0.1) !important;
+    }
+    @keyframes shakeField {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+    .field-error-msg {
+      font-family: 'JetBrains Mono', 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: #ff3333;
+      text-shadow: 0 0 6px rgba(255, 51, 51, 0.5);
+      margin-top: 4px;
+      padding-left: 12px;
+      letter-spacing: 0.5px;
+      animation: fadeInError 0.3s ease;
+    }
+    @keyframes fadeInError {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pwd-strength-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      padding: 0 4px;
+    }
+    .pwd-strength-fill {
+      flex: 1;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+    .pwd-strength-text {
+      font-family: 'JetBrains Mono', 'Share Tech Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      min-width: 60px;
+      text-align: right;
+    }
+    .pwd-strength-bar::before {
+      content: '';
+      flex: 1;
+      max-width: 100%;
+      height: 4px;
+      background: rgba(0, 255, 65, 0.1);
+      border-radius: 2px;
+      position: absolute;
+    }
+
+    /* Game Configuration Section */
+    .game-config-section {
+      margin-top: 4px;
+    }
+    .game-config-divider {
+      text-align: center;
+      margin: 8px 0 12px;
+      padding: 6px 0;
+      border-top: 1px dashed rgba(0, 255, 65, 0.3);
+      border-bottom: 1px dashed rgba(0, 255, 65, 0.3);
+    }
+    .config-divider-label {
+      font-family: 'JetBrains Mono', 'Orbitron', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #00ff41;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+    }
+    .config-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding: 4px 0;
+    }
+    .config-label {
+      font-family: 'JetBrains Mono', 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: #b5e853;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .config-select {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(0, 255, 65, 0.3);
+      color: #00ff41;
+      padding: 6px 10px;
+      border-radius: 2px;
+      font-family: 'JetBrains Mono', 'Share Tech Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      min-width: 100px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .config-select:focus {
+      border-color: #00ff41;
+      box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+    }
+    .config-select option {
+      background: #0a0a0a;
+      color: #00ff41;
+    }
+    .config-toggle {
+      min-width: 120px;
+      text-align: center;
+      font-size: 11px !important;
+      padding: 6px 10px !important;
+    }
+  </style>
+
+  <!-- Firebase Modular Web SDK v10 (compat CDN for seamless zero-build execution) -->
+  <script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <!-- Desktop utility controls and theme selector -->
+  <div class="frame-toggle-bar">
+    <button class="frame-toggle-btn" id="btnReplayBoot" title="Replay the animated welcome screen">↻ Show Welcome</button>
+    <button class="frame-toggle-btn" id="btnOpenFxLab" title="Test CyberFX Animations with 1-click">⚡ FX Lab</button>
+    <div class="theme-switcher" style="display: flex; align-items: center; gap: 6px; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--border-primary);">
+      <span style="font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', 'Share Tech Mono', monospace; text-transform: uppercase;">Theme</span>
+      <select id="themeSelect" style="background: rgba(0,0,0,0.9); border: 1px solid var(--border-primary); color: var(--term-green, #00ff41); padding: 4px 8px; border-radius: 2px; font-size: 11px; font-family: 'JetBrains Mono', 'Share Tech Mono', monospace; cursor: pointer;">
+        <option value="terminal" selected>💎 Neon Glass</option>
+        <option value="neon">🌈 Neon Cyberpunk</option>
+        <option value="pro">🛡️ Professional Security</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Full desktop application shell -->
+  <div class="device-wrapper desktop-app-shell" id="appShell">
+    <div class="scanlines-overlay"></div>
+
+    <!-- ==========================================================
+         SCREEN 0: ANIMATED WELCOME / LOADING VIEW
+         ========================================================== -->
+    <div class="loading-viewport" id="loadingScreen">
+      <div class="loading-scanlines"></div>
+      <div class="loading-glow-orb"></div>
+      
+      <div class="loading-content-card">
+        <div class="boot-mascot" aria-hidden="true">
+          <svg class="boot-mascot-svg" viewBox="0 0 96 96" role="presentation">
+            <path class="boot-mascot-shield" d="M48 7 81 19v23c0 22-13 37-33 47C28 79 15 64 15 42V19L48 7Z" />
+            <circle class="boot-mascot-cheek" cx="32" cy="52" r="4" />
+            <circle class="boot-mascot-cheek" cx="64" cy="52" r="4" />
+            <circle class="boot-mascot-eye" cx="39" cy="39" r="4" />
+            <circle class="boot-mascot-eye" cx="57" cy="39" r="4" />
+            <path class="boot-mascot-smile" d="M39 55q9 10 18 0" />
+            <path class="boot-mascot-sparkle" d="m78 15 2-6 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z" />
+          </svg>
+        </div>
+
+        <div class="loading-title-row">
+          <span class="loading-text-label">Getting ready...</span>
+          <span class="loading-text-percent" id="loadingPercentDisplay">0%</span>
+        </div>
+
+        <!-- Neon Green Capsule Loading Bar with Animated Diagonal Stripes -->
+        <div class="loading-capsule-frame" role="progressbar" aria-label="Loading CyberQuest" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="loading-capsule-stripes" id="loadingCapsuleFill" style="width: 0%;"></div>
+        </div>
+
+        <div class="loading-telemetry-panel">
+          <div class="telemetry-log-line">
+            <span class="telemetry-prompt" aria-hidden="true">✨</span>
+            <span class="telemetry-message" id="loadingTelemetryText">Waking up your cyber buddy...</span>
+          </div>
+          <div class="telemetry-sub-status" id="loadingTelemetrySub">Getting your games ready</div>
+        </div>
+
+        <button type="button" class="btn-skip-boot" id="btnSkipBoot">
+          Skip intro
+        </button>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         SCREEN 1: CYBERQUEST AUTHENTICATION & LOGIN PAGE
+         ========================================================== -->
+    <div class="auth-viewport retro-crt-login-viewport" id="authScreen">
+      <div class="retro-login-window">
+        <!-- Main Auth Panel (Left Column on Desktop) -->
+        <div class="quest-auth-container" id="questAuthContainer">
+          
+          <!-- Cyber Brand Header -->
+          <header class="quest-auth-header">
+            <div class="quest-logo-mark" aria-hidden="true">
+              <svg viewBox="0 0 80 90" role="presentation">
+                <path d="M40 4 70 15v22c0 22-12 37-30 48C22 74 10 59 10 37V15L40 4Z" />
+                <path d="M28 38v-7a12 12 0 0 1 24 0v7M25 38h30v22H25z" />
+              </svg>
+            </div>
+            <h1 class="retro-login-header-title" id="questTitle">CYBER<span>QUEST</span></h1>
+            <p class="quest-tagline">Play <i>•</i> Learn <i>•</i> Stay Safe</p>
+          </header>
+
+          <!-- Navigation Tabs: Log In | Create Account | Play as Guest -->
+          <nav class="auth-tabs-nav" role="tablist" aria-label="Sign in options">
+            <button type="button" class="auth-tab-btn active" id="tabBtnLogin" role="tab" aria-selected="true" aria-controls="panelLogin">
+              <span class="tab-icon">🔑</span>
+              <span class="tab-label">Log In</span>
+            </button>
+            <button type="button" class="auth-tab-btn" id="tabBtnRegister" role="tab" aria-selected="false" aria-controls="panelRegister">
+              <span class="tab-icon">✨</span>
+              <span class="tab-label">Create Account</span>
+            </button>
+            <button type="button" class="auth-tab-btn" id="tabBtnGuest" role="tab" aria-selected="false" aria-controls="panelGuest">
+              <span class="tab-icon">⚡</span>
+              <span class="tab-label">Guest Play</span>
+            </button>
+          </nav>
+
+          <!-- ========================================================
+               TAB PANEL 1: LOG IN (WITH PASSWORD)
+               ======================================================== -->
+          <div class="auth-tab-panel" id="panelLogin" role="tabpanel" aria-labelledby="tabBtnLogin">
+            <div class="auth-panel-heading">
+              <h2 class="auth-panel-title"><span>🔑</span> Player Sign In</h2>
+              <p class="auth-panel-desc">Sign in with your agent name and password to continue your quests.</p>
+            </div>
+
+            <form id="loginForm" class="cyber-auth-form" autocomplete="on" novalidate>
+              <!-- USERNAME Row -->
+              <div class="retro-input-row cyber-input-row" data-field="login-name">
+                <label class="retro-input-label" for="loginUsername">USERNAME:</label>
+                <div class="retro-input-box-wrap">
+                  <input type="text" id="loginUsername" placeholder="e.g. CyberHero" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+" autocomplete="username" autocapitalize="none" spellcheck="false" aria-describedby="loginUsernameHelp" aria-invalid="false">
+                </div>
+              </div>
+              <small class="auth-field-help" id="loginUsernameHelp">3–20 letters, numbers, or underscores.</small>
+
+              <!-- PASSWORD Row -->
+              <div class="retro-input-row cyber-input-row" data-field="login-password">
+                <label class="retro-input-label" for="loginPassword">PASSWORD:</label>
+                <div class="retro-input-box-wrap">
+                  <input type="password" id="loginPassword" placeholder="Enter your passphrase" required minlength="6" maxlength="128" autocomplete="current-password" aria-describedby="loginPasswordHelp" aria-invalid="false">
+                  <button type="button" class="retro-eye-toggle cyber-eye-toggle" id="toggleLoginEye" title="Show or hide password" aria-label="Show password" aria-pressed="false">👁️</button>
+                </div>
+              </div>
+              <small class="auth-field-help" id="loginPasswordHelp">Use your registered account password.</small>
+
+              <!-- Feedback Banner -->
+              <div class="auth-form-feedback hidden" id="loginFeedback" role="status" aria-live="polite" aria-atomic="true"></div>
+
+              <!-- Submit Button -->
+              <div class="retro-submit-wrap">
+                <button type="submit" class="retro-login-submit-btn" id="btnLoginSubmit">
+                  <span>🔑 LOG IN</span>
+                </button>
+              </div>
+
+              <!-- Switch to Register Link -->
+              <div class="auth-footer-prompt">
+                <span>New recruit?</span>
+                <button type="button" class="auth-link-btn" id="btnSwitchToRegister">Create New Account ➔</button>
+              </div>
+              <div class="auth-footer-prompt" style="margin-top: 4px;">
+                <span>Just testing?</span>
+                <button type="button" class="auth-link-btn" id="btnGoToGuest">Play as Guest (No Password)</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- ========================================================
+               TAB PANEL 2: CREATE NEW ACCOUNT (WITH PASSWORD & CONFIRM)
+               ======================================================== -->
+          <div class="auth-tab-panel hidden" id="panelRegister" role="tabpanel" aria-labelledby="tabBtnRegister">
+            <div class="auth-panel-heading">
+              <h2 class="auth-panel-title"><span>✨</span> Create Player Account</h2>
+              <p class="auth-panel-desc">Choose your avatar, username, and password to save your badges and scores.</p>
+            </div>
+
+            <form id="registerForm" class="cyber-auth-form" autocomplete="on" novalidate>
+              <!-- Avatar Picker -->
+              <div class="avatar-picker-wrap" id="regAvatarPickerWrap">
+                <span class="picker-lbl">CHOOSE AGENT AVATAR:</span>
+                <div class="avatar-options">
+                  <label class="avatar-opt" title="Ninja">
+                    <input type="radio" name="agentAvatar" value="🥷" checked>
+                    <span>🥷</span>
+                  </label>
+                  <label class="avatar-opt" title="Cyber Fox">
+                    <input type="radio" name="agentAvatar" value="🦊">
+                    <span>🦊</span>
+                  </label>
+                  <label class="avatar-opt" title="Volt Runner">
+                    <input type="radio" name="agentAvatar" value="⚡">
+                    <span>⚡</span>
+                  </label>
+                  <label class="avatar-opt" title="Guardian Shield">
+                    <input type="radio" name="agentAvatar" value="🛡️">
+                    <span>🛡️</span>
+                  </label>
+                  <label class="avatar-opt" title="Cipher Eye">
+                    <input type="radio" name="agentAvatar" value="👁️">
+                    <span>👁️</span>
+                  </label>
+                  <label class="avatar-opt" title="Star Rocket">
+                    <input type="radio" name="agentAvatar" value="🚀">
+                    <span>🚀</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- REG USERNAME Row -->
+              <div class="retro-input-row cyber-input-row" data-field="reg-name">
+                <label class="retro-input-label" for="regUsername">USERNAME:</label>
+                <div class="retro-input-box-wrap">
+                  <input type="text" id="regUsername" placeholder="e.g. CyberSentinel" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+" autocomplete="username" autocapitalize="none" spellcheck="false" aria-describedby="regUsernameHelp" aria-invalid="false">
+                </div>
+              </div>
+              <small class="auth-field-help" id="regUsernameHelp">3–20 letters, numbers, or underscores (no spaces).</small>
+
+              <!-- REG PASSWORD Row -->
+              <div class="retro-input-row cyber-input-row" data-field="reg-password">
+                <label class="retro-input-label" for="regPassword">PASSWORD:</label>
+                <div class="retro-input-box-wrap">
+                  <input type="password" id="regPassword" placeholder="Create a password (8+ chars)" required minlength="8" maxlength="128" autocomplete="new-password" aria-describedby="regPasswordHelp" aria-invalid="false">
+                  <button type="button" class="retro-eye-toggle cyber-eye-toggle" id="toggleRegPasswordEye" title="Show or hide password" aria-label="Show password" aria-pressed="false">👁️</button>
+                </div>
+              </div>
+
+              <!-- Password Strength Meter -->
+              <div class="pwd-strength-bar" id="regPwdStrengthBar" role="status" aria-live="polite" style="display: none;">
+                <div class="pwd-strength-track">
+                  <div class="pwd-strength-fill" id="regPwdStrengthFill"></div>
+                </div>
+                <span class="pwd-strength-text" id="regPwdStrengthText">WEAK</span>
+              </div>
+              <small class="auth-field-help" id="regPasswordHelp">Use at least 8 characters. Passphrases are harder to guess and easier to remember.</small>
+
+              <!-- CONFIRM PASSWORD Row -->
+              <div class="retro-input-row cyber-input-row" data-field="reg-confirm">
+                <label class="retro-input-label" for="regPasswordConfirm">CONFIRM PASSWORD:</label>
+                <div class="retro-input-box-wrap">
+                  <input type="password" id="regPasswordConfirm" placeholder="Re-enter your password" required minlength="8" maxlength="128" autocomplete="new-password" aria-describedby="regPasswordConfirmHelp" aria-invalid="false">
+                  <button type="button" class="retro-eye-toggle cyber-eye-toggle" id="toggleRegConfirmEye" title="Show or hide confirm password" aria-label="Show confirm password" aria-pressed="false">👁️</button>
+                </div>
+              </div>
+              <div class="password-match-indicator hidden" id="regPasswordMatchIndicator" aria-live="polite"></div>
+              <small class="auth-field-help" id="regPasswordConfirmHelp">Make sure your passwords match.</small>
+
+              <!-- Feedback Banner -->
+              <div class="auth-form-feedback hidden" id="registerFeedback" role="status" aria-live="polite" aria-atomic="true"></div>
+
+              <!-- Submit Button -->
+              <div class="retro-submit-wrap">
+                <button type="submit" class="retro-login-submit-btn" id="btnRegisterSubmit">
+                  <span>✨ CREATE ACCOUNT</span>
+                </button>
+              </div>
+
+              <!-- Switch to Login Link -->
+              <div class="auth-footer-prompt">
+                <span>Already have an account?</span>
+                <button type="button" class="auth-link-btn" id="btnSwitchToLogin">Log In Here ➔</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- ========================================================
+               TAB PANEL 3: PLAY AS GUEST
+               ======================================================== -->
+          <div class="auth-tab-panel hidden" id="panelGuest" role="tabpanel" aria-labelledby="tabBtnGuest">
+            <div class="auth-panel-heading">
+              <h2 class="auth-panel-title"><span>⚡</span> Quick Play (Guest)</h2>
+              <p class="auth-panel-desc">Play immediately without creating a password. Your progress is saved on this browser.</p>
+            </div>
+
+            <div class="cyber-auth-form">
+              <div class="retro-input-row cyber-input-row" data-field="guest-name">
+                <label class="retro-input-label" for="guestNameInput">GAME NICKNAME:</label>
+                <div class="retro-input-box-wrap">
+                  <input type="text" id="guestNameInput" class="quest-name-input" maxlength="18" autocomplete="nickname" autocapitalize="none" spellcheck="false" placeholder="Cyber Explorer" aria-describedby="guestNameHelp" aria-invalid="false">
+                </div>
+              </div>
+              <small id="guestNameHelp" class="quest-name-help" role="status" aria-live="polite">Your progress stays on this device.</small>
+
+              <div class="retro-submit-wrap">
+                <button type="button" class="quest-start-button" id="btnPlayGuest">
+                  Start Game <span aria-hidden="true">➜</span>
+                </button>
+              </div>
+
+              <div class="auth-footer-prompt">
+                <span>Want to save across devices?</span>
+                <button type="button" class="auth-link-btn" id="btnGuestToRegister">Create an Account ➔</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden legacy compatibility container -->
+          <div style="display:none;" aria-hidden="true">
+            <form id="authForm">
+              <div id="avatarPickerWrap"></div>
+              <input id="authAgentName" type="text">
+              <input id="authPassword" type="password">
+              <button id="togglePasswordEye" type="button"></button>
+              <div id="authFormFeedback"></div>
+              <button id="authSubmitBtn" type="submit"></button>
+              <button id="btnSwitchAuthMode" type="button"></button>
+              <button id="btnShowAccountForm" type="button"></button>
+              <button id="btnHideAccountForm" type="button"></button>
+              <span id="authFormTitle"></span>
+              <span id="authPasswordHelp"></span>
+              <span id="authAgentNameHelp"></span>
+            </form>
+          </div>
+
+        </div>
+
+        <aside class="quest-level-preview" aria-label="Eight games in CyberQuest">
+          <h2>YOUR QUESTS</h2>
+          <ol>
+            <li><span>🔐</span><b>Level 1</b><span>Password Parkour</span></li>
+            <li><span>✉️</span><b>Level 2</b><span>Phishing Patrol</span></li>
+            <li><span>🔗</span><b>Level 3</b><span>Safe Link Safari</span></li>
+            <li><span>🦠</span><b>Level 4</b><span>Virus File Hunt</span></li>
+            <li><span>🐙</span><b>Level 5</b><span>Ransomware Rescue</span></li>
+            <li><span>🕵️</span><b>Level 6</b><span>Spy Gadget Search</span></li>
+            <li><span>🛡️</span><b>Level 7</b><span>Password Power-Up</span></li>
+            <li><span>📱</span><b>Level 8</b><span>Think Before You Share</span></li>
+          </ol>
+          <div class="quest-preview-foot"><span>🛡️</span> Learn one safe step at a time.</div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         SCREEN 2: CYBERQUEST GAME HUB
+         ========================================================== -->
+    <div class="hub-viewport hidden" id="hubScreen">
+      <!-- Top HUD Header -->
+      <header class="hub-top-hud">
+        <div class="hud-brand">
+          <span class="hud-logo-icon" id="hudLogoDisplay">🛡️</span>
+          <div class="hud-title-wrap">
+            <div class="hud-main-title" id="hudMainTitleDisplay">CYBERSHEILD</div>
+            <div class="hud-sub-title" id="hudSubTitleDisplay">PLAY • LEARN • STAY SAFE</div>
+          </div>
+        </div>
+
+        <div class="hud-stats-group">
+          <div class="hud-chip score">
+            <span>⭐</span>
+            <span class="chip-val" id="hudScoreVal">0</span>
+          </div>
+          <div class="hud-chip lives">
+            <span>❤️</span>
+            <span class="chip-val" id="hudLivesVal">3</span>
+          </div>
+          <button type="button" class="hud-quick-quiz-pill" id="btnHudQuickQuiz" title="Test your cyber knowledge with a randomized quick quiz!">⚡ Quick Quiz</button>
+          <button class="hud-settings-btn" id="hudSettingsBtn" title="Settings">⚙️</button>
+        </div>
+      </header>
+
+      <!-- Threat Broadcast Alert Ticker -->
+      <div class="hud-announcement-bar hidden" id="hudAnnouncementBar">
+        <span class="announcement-badge">🚨 BROADCAST</span>
+        <span class="announcement-text" id="hudAnnouncementMsg">SAFETY TIP: Pause and check before you click.</span>
+      </div>
+
+      <!-- Scrollable Tab Views -->
+      <main class="hub-scroll-content">
+        <!-- Tab 1: Home Briefing & Empty State for New Recruits -->
+        <section id="tabContent_home"></section>
+
+        <!-- Tab 2: Levels Matrix (Tactical Sci-Fi HUD - IMAGE 1 MATCH) -->
+        <section id="tabContent_levels" class="tactical-levels-viewport hidden">
+          <!-- Top Screen Header with Navigation & Live Operation Stats -->
+          <div class="tactical-screen-header">
+            <div class="tactical-header-actions-row">
+              <button type="button" class="tactical-top-back-btn" id="btnTacticalTopBack" title="Return to Hub Home">
+                <span class="back-diamond">◆</span> RETURN TO HQ
+              </button>
+              <div class="tactical-header-intel-pill">
+                <span class="intel-live-dot"></span>
+                <span>8 MISSIONS ACTIVE • 02:30 PER OPERATION</span>
+              </div>
+            </div>
+            <h1 class="tactical-hud-title">MISSION DIRECTORY</h1>
+            <p class="tactical-subtitle">Choose an operation to review its threat briefing and deploy.</p>
+            <div class="tactical-title-bracket"></div>
+          </div>
+
+          <!-- Main Central Tactical HUD Frame -->
+          <div class="tactical-hud-frame">
+            <!-- Top Tab: SELECT -->
+            <div class="hud-top-tab">
+              <span class="hud-tab-text">SELECT</span>
+            </div>
+
+            <!-- Top Right Mission Preview Box -->
+            <div class="hud-preview-block">
+              <div class="preview-lvl-id" id="hudPreviewLvlId">LEVEL: 02</div>
+              <div class="preview-lvl-name" id="hudPreviewLvlName">Dropzone-2</div>
+              <div class="preview-corner-bracket">✕</div>
+            </div>
+
+            <!-- Left Navigation Margin & Amber Bar -->
+            <div class="hud-side-margin left">
+              <div class="hud-amber-bar"></div>
+              <button type="button" class="hud-arrow-btn prev" id="hudPrevPageBtn" title="Previous Page">◀</button>
+            </div>
+
+            <!-- Right Navigation Margin & Arrow -->
+            <div class="hud-side-margin right">
+              <button type="button" class="hud-arrow-btn next" id="hudNextPageBtn" title="Next Page">▶</button>
+              <div class="hud-vertical-label">LEVELS SELECT</div>
+            </div>
+
+            <!-- Hexagon Corner Mesh Watermarks -->
+            <div class="hex-watermark top-left"></div>
+            <div class="hex-watermark bottom-right"></div>
+
+            <!-- All eight CyberQuest games are shown together. -->
+            <div class="hud-cards-grid" id="levelsListGrid">
+              <!-- Dynamically populated eight game cards -->
+            </div>
+
+            <!-- Bottom Left HUD Status -->
+            <div class="hud-bottom-left-info">
+              <div class="hud-accent-triangle"></div>
+              <div class="hud-status-text">
+                <span class="active-lbl">UP NEXT:</span>
+                <span class="active-val" id="hudActiveLevelStatus">LEVEL: 01 Password Parkour</span>
+              </div>
+            </div>
+
+            <!-- Bottom Center Pagination Dots -->
+            <div class="hud-pagination-dots" id="hudPaginationDots">
+              <button class="hud-dot active" type="button" data-page="1" aria-label="Show missions 1 to 4"></button>
+              <button class="hud-dot" type="button" data-page="2" aria-label="Show missions 5 to 8"></button>
+            </div>
+
+            <!-- Bottom Right Progress Section -->
+            <div class="hud-progress-block">
+              <div class="hud-hex-progress-badge">
+                <svg class="hex-svg" viewBox="0 0 60 60">
+                  <polygon points="30,2 58,16 58,44 30,58 2,44 2,16" class="hex-border" />
+                </svg>
+                <span class="hex-val" id="hudProgressPercentVal">80%</span>
+              </div>
+              <div class="hud-progress-bar-wrap">
+                <div class="hud-progress-stripes">///</div>
+                <div class="hud-progress-track">
+                  <div class="hud-progress-fill" id="hudProgressFillBar" style="width: 80%;"></div>
+                </div>
+                <div class="hud-progress-label" id="hudProgressLabelText">80% Completed</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Left Screen BACK Button -->
+          <button type="button" class="tactical-back-btn" id="btnTacticalBack" title="Return to Hub Home">
+            <span class="back-diamond">◆</span>
+            <span class="back-text">BACK</span>
+          </button>
+        </section>
+
+        <!-- Tab 3: Achievements & Certificates -->
+        <section id="tabContent_achievements" class="hidden"></section>
+
+        <!-- Tab 4: Leaderboard -->
+        <section id="tabContent_leaderboard" class="hidden"></section>
+
+        <!-- Tab 5: How to Play Field Guide -->
+        <section id="tabContent_howtoplay" class="hidden">
+          <div class="empty-state-welcome-card" style="text-align: left;">
+            <h3 style="color: var(--cyan); margin-bottom: 10px;">📖 QUICK SAFETY GUIDE</h3>
+            <p style="margin-bottom: 8px;"><strong>Look closely:</strong> Check who sent a message and where a link will take you.</p>
+            <p style="margin-bottom: 8px;"><strong>Keep private:</strong> Don’t share passwords, sign-in codes, or personal details online.</p>
+            <p style="margin-bottom: 8px;"><strong>Pause first:</strong> Ask a trusted adult before opening an unexpected download or connecting an unknown device.</p>
+            <p style="margin-bottom: 0;"><strong>Play and learn:</strong> Pick a game, follow the clues, and try again if you miss one.</p>
+          </div>
+        </section>
+      </main>
+
+      <!-- Desktop navigation sidebar -->
+      <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="home">
+          <span class="nav-icon">🏠</span>
+          <span>HOME</span>
+        </button>
+        <button class="nav-item" data-tab="levels">
+          <span class="nav-icon">🎮</span>
+          <span>LEVELS</span>
+        </button>
+        <button class="nav-item" data-tab="achievements">
+          <span class="nav-icon">🏆</span>
+          <span>BADGES</span>
+        </button>
+        <button class="nav-item" data-tab="leaderboard">
+          <span class="nav-icon">📊</span>
+          <span>RANKS</span>
+        </button>
+        <button class="nav-item" data-tab="howtoplay">
+          <span class="nav-icon">❓</span>
+          <span>GUIDE</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- ==========================================================
+         SCREEN 3: MINI-GAME ACTIVE ARENA VIEWPORT
+         ========================================================== -->
+    <div class="game-viewport hidden" id="gameScreen">
+      <div class="game-top-bar">
+        <button class="exit-game-btn" id="btnExitGame">✕ Exit Game</button>
+        <div class="mission-live-heading">
+          <span class="mission-live-pill" id="missionLiveState"><i></i> GAME LIVE</span>
+          <strong class="mission-live-title" id="missionLiveTitle">Starting simulation</strong>
+        </div>
+        <div class="mission-live-telemetry">
+          <span class="mission-feed-text" id="missionFeedText">Look carefully and follow the clue.</span>
+          <div class="mission-clock-group">
+            <div><small>ELAPSED</small><strong id="missionElapsedTime">00:00</strong></div>
+            <div><small>LOCAL TIME</small><strong id="missionWallClock">--:--:--</strong></div>
+          </div>
+          <label class="mission-speed-control" for="missionSpeedSelect">
+            <small>PACE</small>
+            <select id="missionSpeedSelect" aria-label="Simulation speed">
+              <option value="slow">SLOW</option>
+              <option value="normal">REAL TIME</option>
+              <option value="fast">FAST</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div id="gameArenaSlot" style="flex: 1; display: flex; flex-direction: column;"></div>
+    </div>
+
+    <!-- ==========================================================
+         SCREEN 4: DEDICATED ADMIN PANEL ROUTE (#/admin)
+         ========================================================== -->
+    <div class="admin-viewport hidden" id="adminViewContainer"></div>
+
+    <!-- ==========================================================
+         SCREEN 5: OFFICIAL CERTIFICATE VIEW (#/certificate)
+         ========================================================== -->
+    <div class="certificate-viewport hidden" id="certificateViewContainer">
+      <div style="width: 100%; max-width: 580px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <button class="exit-game-btn" id="btnBackFromCert">← Return to Hub</button>
+        <span class="mono" style="color: var(--amber); font-size: 11px;">VERIFIABLE CREDENTIAL</span>
+      </div>
+      <div class="cert-canvas-frame">
+        <canvas id="certCanvas"></canvas>
+      </div>
+      <div class="cert-actions-row">
+        <button class="btn-cert-action gold" id="btnDownloadCertPNG">📥 Download Certificate (PNG)</button>
+        <button class="btn-cert-action" id="btnPrintCert">🖨️ Print Certificate</button>
+      </div>
+    </div>
+
+    <!-- Mission Briefing Modal -->
+    <div class="briefing-modal-overlay hidden" id="missionBriefingModal">
+      <div class="briefing-modal-card">
+        <div class="briefing-top">
+          <div class="briefing-title" id="briefingTitle">LEVEL CLUE</div>
+          <button class="btn-close-briefing" id="btnCloseBriefing">✕</button>
+        </div>
+
+        <div class="briefing-intel-section">
+          <div class="intel-box threat">
+            <strong>👀 WATCH OUT:</strong> <span id="briefingThreat">Look for a tricky clue.</span>
+          </div>
+          <div class="intel-box">
+            <strong>🛡️ WHAT TO DO:</strong> <span id="briefingDefense">Pause and make a safe choice.</span>
+          </div>
+          <div class="intel-box rule">
+            <strong>💡 REMEMBER:</strong> <span id="briefingRule">Ask a trusted adult if unsure.</span>
+          </div>
+        </div>
+
+        <section class="quest-practice-panel" aria-labelledby="questPracticeTitle">
+          <div class="quest-practice-heading">
+            <div>
+              <span class="quest-practice-kicker">QUICK CHECK</span>
+              <h3 id="questPracticeTitle">Quick safety question</h3>
+            </div>
+            <span class="quest-question-source" id="questQuestionSource">READY</span>
+          </div>
+          <div class="quest-question-content" id="briefingQuizSlot" aria-live="polite">
+            <p>Try a quick question, then start the game whenever you’re ready.</p>
+          </div>
+          <button class="btn-quest-question" id="btnQuestQuestion" type="button">✦ TRY A QUESTION</button>
+        </section>
+
+        <button class="btn-launch-simulation" id="btnLaunchSimulation">
+          🚀 START LEVEL
+        </button>
+      </div>
+    </div>
+
+    <!-- Level Result Modal -->
+    <div class="result-overlay-modal hidden" id="levelResultModal">
+      <div class="result-card">
+        <h2 class="result-title" id="resultTitle">🎉 MISSION ACCOMPLISHED!</h2>
+        <div class="result-score-tag" id="resultScore">+250 POINTS AWARDED</div>
+        <p class="result-message-body" id="resultMessage">Outstanding performance, Agent!</p>
+        <button class="btn-result-continue" id="btnResultContinue">CONTINUE TO HUB</button>
+      </div>
+    </div>
+
+    <!-- Settings & Mission Customization Modal (Tab-Based & Taskbar-Safe) -->
+    <div class="result-overlay-modal hidden" id="settingsModal">
+      <div class="settings-modal-card">
+        <!-- Header with Title and Quick Close Button -->
+        <div class="settings-modal-header">
+          <div class="settings-header-title-wrap">
+            <span class="settings-gear-icon">⚙️</span>
+            <div>
+              <h3 class="settings-title">SYSTEM CONFIGURATION</h3>
+              <p class="settings-subtitle">Mission preferences, audio & account settings</p>
+            </div>
+          </div>
+          <button type="button" class="settings-close-x-btn" id="btnCloseSettingsTop" title="Close Settings">✕</button>
+        </div>
+
+        <!-- High-Tech Navigation Tabs -->
+        <div class="settings-tabs-nav" id="settingsTabsNav">
+          <button type="button" class="settings-tab-btn active" data-tab="gameplay">
+            <span class="tab-icon">🎮</span> GAMEPLAY
+          </button>
+          <button type="button" class="settings-tab-btn" data-tab="audiovisual">
+            <span class="tab-icon">🎨</span> AUDIO & CRT
+          </button>
+          <button type="button" class="settings-tab-btn" data-tab="account">
+            <span class="tab-icon">☁️</span> ACCOUNT
+          </button>
+        </div>
+
+        <!-- Scrollable Tab Content Viewport -->
+        <div class="settings-tabs-viewport">
+          <!-- TAB 1: GAMEPLAY / MISSION CUSTOMIZATION -->
+          <div class="settings-tab-panel active" id="settingsPanel_gameplay">
+            <div class="config-panel-intro">
+              <span class="panel-badge">MISSION CONTROLS</span>
+              <p>Customize gameplay difficulty, hints, lives, and simulation pacing.</p>
+            </div>
+
+            <div class="config-row">
+              <span class="config-label">⚔️ Difficulty</span>
+              <select class="config-select" id="cfgDifficulty">
+                <option value="easy">🟢 Easy (More Time)</option>
+                <option value="normal" selected>🟡 Normal (Balanced)</option>
+                <option value="hard">🔴 Hard (1.5x Score!)</option>
+              </select>
+            </div>
+
+            <div class="config-row">
+              <span class="config-label">⏱️ Mission Timer</span>
+              <button type="button" class="config-toggle" id="cfgTimerToggle">⏱️ TIMER: ON</button>
+            </div>
+
+            <div class="config-row">
+              <span class="config-label">💡 Defensive Hints</span>
+              <button type="button" class="config-toggle" id="cfgHintsToggle">💡 HINTS: ON</button>
+            </div>
+
+            <div class="config-row">
+              <span class="config-label">❤️ Starting Lives</span>
+              <select class="config-select" id="cfgLives">
+                <option value="3" selected>❤️❤️❤️ 3 Lives</option>
+                <option value="5">❤️❤️❤️❤️❤️ 5 Lives</option>
+                <option value="10">🛡️ 10 Lives (Training)</option>
+              </select>
+            </div>
+
+            <div class="config-row">
+              <span class="config-label">⚡ Simulation Speed</span>
+              <select class="config-select" id="cfgSpeed">
+                <option value="slow">🐢 Slow Pace</option>
+                <option value="normal" selected>⚙️ Standard</option>
+                <option value="fast">⚡ Fast / Blitz</option>
+              </select>
+            </div>
+
+            <div class="config-action-row">
+              <button type="button" class="config-toggle reset-btn" id="cfgResetDefaults">
+                🔄 Reset Mission Config to Defaults
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 2: AUDIO & CRT DISPLAY -->
+          <div class="settings-tab-panel hidden" id="settingsPanel_audiovisual">
+            <div class="config-panel-intro">
+              <span class="panel-badge">AUDIO & DISPLAY</span>
+              <p>Control procedural synth audio and retro phosphor CRT filters.</p>
+            </div>
+
+            <div class="settings-audio-group">
+              <button class="setting-action-btn" id="toggleSfxSetting">🔊 SFX: ON</button>
+              <button class="setting-action-btn" id="toggleMusicSetting">🎵 MUSIC: ON</button>
+            </div>
+
+            <div class="config-row">
+              <span class="config-label">🎨 Terminal Phosphor</span>
+              <select class="config-select" id="cfgPhosphor">
+                <option value="green" selected>🟩 Matrix Green</option>
+                <option value="amber">🟧 Amber CRT</option>
+                <option value="cyan">🟦 Ice Cyan</option>
+                <option value="white">⬜ Monochrome</option>
+              </select>
+            </div>
+
+            <div class="config-row">
+              <span class="config-label">🖥️ CRT Scanlines</span>
+              <button type="button" class="config-toggle" id="cfgCrtToggle">📺 CRT: ACTIVE</button>
+            </div>
+          </div>
+
+          <!-- TAB 3: ACCOUNT & SYSTEM -->
+          <div class="settings-tab-panel hidden" id="settingsPanel_account">
+            <div class="config-panel-intro">
+              <span class="panel-badge">SECURITY & SYNC</span>
+              <p>Cloud synchronization status and session credentials.</p>
+            </div>
+
+            <div class="firebase-box">
+              <div class="firebase-box-header">
+                <strong>☁️ ONLINE GAME DATA</strong>
+                <span id="firebaseStatusBadge" class="tag green">Connected</span>
+              </div>
+              <p class="firebase-desc">Player progress, mission completions, and high scores automatically sync to your secure agent profile.</p>
+            </div>
+
+            <div class="settings-account-actions">
+              <button class="setting-action-btn logout" id="btnLogoutAgent">🚪 Logout Agent</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer with Close Button -->
+        <div class="settings-modal-footer">
+          <button type="button" class="setting-action-btn close-main" id="btnCloseSettings">✕ Close Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CyberFX Animation Lab Modal (Less-Coding Interactive Tester) -->
+    <div class="result-overlay-modal hidden" id="fxLabModal">
+      <div class="settings-modal-card" style="max-width: 420px; max-height: 85vh; overflow-y: auto;">
+        <h3 class="settings-title">⚡ CYBER ANIMATION LAB</h3>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; text-align: center;">
+          Powered by Node.js, Express & CyberFX. Test high-impact animations with <strong>1 line of code</strong>!
+        </p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+          <button class="setting-action-btn" id="btnFxPulse">🟢 Pulse Aura</button>
+          <button class="setting-action-btn" id="btnFxShake">🔴 Error Shake</button>
+          <button class="setting-action-btn" id="btnFxGlitch">⚡ Cyber Glitch</button>
+          <button class="setting-action-btn" id="btnFxShield">🛡️ Shield Deflect</button>
+          <button class="setting-action-btn" id="btnFxConfetti">🎉 Win Confetti</button>
+          <button class="setting-action-btn" id="btnFxCounter">🔢 Score Roll</button>
+          <button class="setting-action-btn" id="btnFxToast">📢 HUD Toast</button>
+          <button class="setting-action-btn" id="btnFxTada">⭐ Tada Wiggle</button>
+        </div>
+
+        <div id="fxLabPreviewBox" style="padding: 12px; background: rgba(0, 240, 255, 0.05); border: 1px dashed var(--border-cyan); border-radius: 8px; text-align: center; margin-bottom: 12px;">
+          <div id="fxTargetElement" style="font-size: 24px; margin-bottom: 4px;">🛡️ CYBER TARGET</div>
+          <code id="fxCodeSnippet" style="font-size: 11px; color: var(--cyan); display: block;">CyberFX.pop(target)</code>
+        </div>
+
+        <button class="setting-action-btn" id="btnCloseFxLab">✕ Close Lab</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Core Libraries & Scripts -->
+  <script src="js/cyber-fx.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/certificate.js"></script>
+  <script src="js/admin.js"></script>
+
+  <!-- CyberQuest game engines -->
+  <script src="js/games/level1_password.js"></script>
+  <script src="js/games/level2_phishing.js"></script>
+  <script src="js/games/quest_level3_links.js"></script>
+  <script src="js/games/quest_level4_files.js"></script>
+  <script src="js/games/quest_level5_ransomware.js"></script>
+  <script src="js/games/level7_spydew.js"></script>
+  <script src="js/games/quest_level7_password.js"></script>
+  <script src="js/games/level4_socialeng.js"></script>
+
+  <script src="js/popup.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

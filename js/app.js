@@ -1195,10 +1195,10 @@ const App = (function() {
       "Jump over weak passwords. Use ← → / A D and Space, or touch controls.",
       "Catch safe messages. Avoid suspicious mail.",
       "Pick a safe link after checking the website name.",
-      "Scan, isolate, and clean the pretend computers.",
+      "Defend the 4×4 grid! Deploy Antivirus, Firewalls, Freeze, and Cleaners to halt virus spread.",
       "Answer the clues to help rescue the locked files.",
       "Tap or click the hidden gadgets.",
-      "Collect strong password pieces. Use ← → / A D and Space, or touch controls.",
+      "Analyze the personal profile and identify which password is most vulnerable to being guessed.",
       "Choose the safest response. Never share a sign-in code."
     ];
 

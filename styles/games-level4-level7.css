@@ -1,0 +1,456 @@
+/* ==========================================================================
+   LEVEL 4 (VIRUS ATTACK) & LEVEL 7 (PASSWORD GUESSING) - GAME HUB STYLES
+   ========================================================================== */
+
+/* ── Level 4: Virus Attack – Stop the Spread ── */
+.quest-virus-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.quest-virus-header {
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.quest-virus-header h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #39ff14;
+  margin: 0 0 4px;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 14px rgba(57, 255, 20, 0.4);
+}
+
+.quest-virus-header p {
+  color: #8faecf;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.quest-virus-stats {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.quest-v-stat {
+  background: rgba(10, 24, 54, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 10px;
+  padding: 6px 14px;
+  text-align: center;
+  min-width: 80px;
+}
+
+.quest-v-stat .lbl {
+  display: block;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.58rem;
+  letter-spacing: 1.5px;
+  color: #6187b5;
+  text-transform: uppercase;
+}
+
+.quest-v-stat .val {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #eaf4ff;
+}
+
+.quest-v-stat.stg .val { color: #00f0ff; }
+.quest-v-stat.trn .val { color: #b026ff; }
+.quest-v-stat.inf .val { color: #ff1744; }
+.quest-v-stat.hlth .val { color: #39ff14; }
+.quest-v-stat.scr .val { color: #ffd700; }
+
+.quest-virus-arena {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+/* Tool Dock */
+.quest-tool-dock {
+  background: rgba(8, 20, 46, 0.9);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 14px;
+  padding: 12px;
+  width: 175px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quest-dock-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  color: #00f0ff;
+  text-align: center;
+  text-transform: uppercase;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+.quest-tool-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  padding: 12px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.quest-tool-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 240, 255, 0.5);
+}
+
+.quest-tool-item.active {
+  transform: translateY(-2px) scale(1.03);
+}
+
+.quest-tool-item.active.av { border-color: #39ff14; background: rgba(57, 255, 20, 0.12); box-shadow: 0 0 16px rgba(57, 255, 20, 0.35); }
+.quest-tool-item.active.fw { border-color: #00b0ff; background: rgba(0, 176, 255, 0.12); box-shadow: 0 0 16px rgba(0, 176, 255, 0.35); }
+.quest-tool-item.active.fr { border-color: #80deea; background: rgba(128, 222, 234, 0.12); box-shadow: 0 0 16px rgba(128, 222, 234, 0.35); }
+.quest-tool-item.active.cl { border-color: #b026ff; background: rgba(176, 38, 255, 0.12); box-shadow: 0 0 16px rgba(176, 38, 255, 0.35); }
+
+.quest-tool-item .t-ico { font-size: 1.6rem; }
+.quest-tool-item .t-name { font-family: 'Orbitron', sans-serif; font-size: 0.68rem; font-weight: 700; color: #bad2f0; letter-spacing: 0.8px; }
+
+.quest-tool-hint {
+  font-size: 0.68rem;
+  color: #6b8bb3;
+  line-height: 1.35;
+  text-align: center;
+  min-height: 42px;
+  margin-top: 2px;
+}
+
+/* 4x4 / 8x8 Grid Area */
+.quest-grid-wrap {
+  background: rgba(6, 17, 40, 0.95);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+.quest-matrix-4x4 {
+  display: grid;
+  grid-template-columns: repeat(4, 58px);
+  grid-template-rows: repeat(4, 58px);
+  gap: 6px;
+}
+
+.quest-matrix-8x8 {
+  display: grid;
+  grid-template-columns: repeat(8, 48px);
+  grid-template-rows: repeat(8, 48px);
+  gap: 4px;
+}
+
+.q-cell {
+  width: 58px;
+  height: 58px;
+  border-radius: 9px;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.55rem;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.q-cell:hover { transform: scale(1.08); z-index: 2; }
+.q-cell.healthy { background: #0b2416; border-color: #17521c; }
+.q-cell.healthy:hover { box-shadow: 0 0 12px rgba(57, 255, 20, 0.3); }
+.q-cell.infected { background: #3b0909; border-color: #cc0000; animation: qInfectGlow 1s ease-in-out infinite; }
+.q-cell.infected.fast-virus { border-color: #ff9100; animation: qInfectGlowF 0.6s ease-in-out infinite; }
+@keyframes qInfectGlow { 0%,100% { box-shadow: 0 0 6px rgba(204,0,0,0.3); } 50% { box-shadow: 0 0 18px rgba(204,0,0,0.6); } }
+@keyframes qInfectGlowF { 0%,100% { box-shadow: 0 0 6px rgba(255,145,0,0.3); } 50% { box-shadow: 0 0 18px rgba(255,145,0,0.65); } }
+.q-cell.firewall { background: #081738; border-color: #1358a8; box-shadow: 0 0 10px rgba(19, 88, 168, 0.35); }
+.q-cell.frozen { background: #082938; border-color: #0097a7; animation: qFreezeGlow 2s infinite; }
+@keyframes qFreezeGlow { 0%,100% { box-shadow: 0 0 5px rgba(0,151,167,0.25); } 50% { box-shadow: 0 0 14px rgba(0,151,167,0.5); } }
+.q-cell .fc-num { position: absolute; bottom: 1px; right: 3px; font-family: 'Orbitron', sans-serif; font-size: 0.52rem; color: #80deea; font-weight: 700; }
+.q-cell.pop-clean { animation: qCleanFlash 0.6s forwards; }
+@keyframes qCleanFlash { 0% { background: rgba(57,255,20,0.45); box-shadow: 0 0 25px rgba(57,255,20,0.7); } 100% { background: #0b2416; box-shadow: none; } }
+.q-cell.pop-infect { animation: qInfectPop 0.5s ease-out; }
+@keyframes qInfectPop { 0% { transform: scale(1.22); background: rgba(255,23,68,0.6); } 100% { transform: scale(1); } }
+
+/* Legend */
+.quest-legend-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.quest-leg-i { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: #7b9cc4; }
+.quest-leg-sw { width: 13px; height: 13px; border-radius: 3px; border: 2px solid; }
+.quest-leg-sw.h { background: #0b2416; border-color: #17521c; }
+.quest-leg-sw.i { background: #3b0909; border-color: #cc0000; }
+.quest-leg-sw.fv { background: #3b0909; border-color: #ff9100; }
+.quest-leg-sw.fw { background: #081738; border-color: #1358a8; }
+.quest-leg-sw.fz { background: #082938; border-color: #0097a7; }
+
+/* ── Level 7: Password Guessing Game ── */
+.quest-pwd-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.quest-pwd-stats {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.quest-p-stat {
+  background: rgba(10, 24, 54, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 10px;
+  padding: 8px 18px;
+  text-align: center;
+  min-width: 100px;
+}
+.quest-p-stat .lbl { display: block; font-family: 'Orbitron', sans-serif; font-size: 0.6rem; letter-spacing: 1.5px; color: #00f0ff; text-transform: uppercase; }
+.quest-p-stat .val { font-family: 'Share Tech Mono', monospace; font-size: 1.25rem; font-weight: 700; color: #fff; }
+.quest-p-stat.scr .val { color: #ffd700; }
+.quest-p-stat.str .val { color: #39ff14; }
+
+.quest-pwd-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media(max-width: 720px) {
+  .quest-pwd-layout { grid-template-columns: 1fr; }
+  .quest-matrix-4x4 { grid-template-columns: repeat(4, 46px); grid-template-rows: repeat(4, 46px); gap: 4px; }
+  .quest-matrix-8x8 { grid-template-columns: repeat(8, 36px); grid-template-rows: repeat(8, 36px); gap: 3px; }
+  .q-cell { width: 46px; height: 46px; font-size: 1.25rem; }
+  .quest-tool-dock { flex-direction: row; width: 100%; flex-wrap: wrap; justify-content: center; }
+  .quest-dock-title { width: 100%; }
+  .quest-tool-item { flex: 1; min-width: 75px; }
+}
+
+/* Profile Card */
+.quest-profile-card {
+  background: linear-gradient(145deg, #101c36, #0a1329);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 14px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.quest-profile-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, #00f0ff, #b026ff, #ff2d95);
+}
+
+.quest-prof-header {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Orbitron', sans-serif; font-size: 0.72rem;
+  color: #00f0ff; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px; padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+}
+
+.quest-avatar-area {
+  text-align: center; margin-bottom: 12px;
+}
+
+.quest-avatar-bubble {
+  width: 68px; height: 68px; border-radius: 50%;
+  background: linear-gradient(135deg, #00f0ff, #b026ff);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; margin: 0 auto 6px;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.quest-avatar-title {
+  font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff;
+}
+
+.quest-profile-rows {
+  display: flex; flex-direction: column; gap: 7px;
+}
+
+.quest-prow {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(0, 240, 255, 0.035);
+  border: 1px solid rgba(0, 240, 255, 0.08);
+  border-radius: 8px; padding: 7px 10px;
+  transition: all 0.2s;
+}
+
+.quest-prow:hover {
+  background: rgba(0, 240, 255, 0.07);
+  border-color: rgba(0, 240, 255, 0.2);
+}
+
+.quest-prow.leak-pulse {
+  animation: qLeakGlow 1.5s ease-in-out;
+}
+@keyframes qLeakGlow {
+  0% { border-color: rgba(0,240,255,0.08); background: rgba(0,240,255,0.035); }
+  30% { border-color: #ff2d95; background: rgba(255,45,149,0.18); box-shadow: 0 0 14px rgba(255,45,149,0.4); }
+  100% { border-color: rgba(0,240,255,0.08); background: rgba(0,240,255,0.035); }
+}
+
+.quest-prow .p-ico { font-size: 1.1rem; width: 24px; text-align: center; }
+.quest-prow .p-data { flex: 1; }
+.quest-prow .p-lbl { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 1.2px; color: #5a7ea8; font-family: 'Orbitron', sans-serif; }
+.quest-prow .p-val { font-family: 'Share Tech Mono', monospace; font-size: 0.88rem; color: #dce7f5; }
+
+/* Password Choices Panel */
+.quest-pw-panel {
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.quest-pw-prompt {
+  background: rgba(10, 22, 50, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 12px;
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.quest-pw-prompt h4 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.88rem;
+  color: #ff2d95;
+  margin: 0 0 3px;
+  letter-spacing: 1px;
+}
+
+.quest-pw-prompt p {
+  color: #7d96b8;
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+.quest-pw-list {
+  display: flex; flex-direction: column; gap: 9px;
+}
+
+.quest-pw-tile {
+  background: linear-gradient(145deg, #13203c, #0d162a);
+  border: 2px solid rgba(0, 240, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.22s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quest-pw-tile:hover {
+  transform: translateY(-2px) scale(1.02);
+  border-color: #00f0ff;
+  box-shadow: 0 4px 18px rgba(0, 240, 255, 0.18);
+}
+
+.quest-pw-tile.disabled { pointer-events: none; opacity: 0.5; }
+
+.quest-pw-tile.correct {
+  border-color: #39ff14 !important;
+  background: rgba(57, 255, 20, 0.15) !important;
+  box-shadow: 0 0 22px rgba(57, 255, 20, 0.4) !important;
+}
+
+.quest-pw-tile.wrong {
+  border-color: #ff1744 !important;
+  background: rgba(255, 23, 68, 0.15) !important;
+  animation: qTileShake 0.45s ease-out;
+}
+@keyframes qTileShake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-7px); }
+  75% { transform: translateX(7px); }
+}
+
+.quest-pw-tile .pw-letter {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', sans-serif; font-size: 0.76rem; font-weight: 700; color: #00f0ff;
+  flex-shrink: 0;
+}
+
+.quest-pw-tile .pw-string {
+  font-family: 'Share Tech Mono', monospace; font-size: 1rem; color: #f0f6ff; flex: 1; word-break: break-all;
+}
+
+.quest-pw-tile .pw-mark { font-size: 1.15rem; opacity: 0; }
+.quest-pw-tile.correct .pw-mark.ck { opacity: 1; }
+.quest-pw-tile.wrong .pw-mark.cr { opacity: 1; }
+
+.quest-pw-msg-box { min-height: 54px; }
+.quest-pw-msg {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  display: none;
+}
+.quest-pw-msg.show { display: block; }
+.quest-pw-msg.success { background: rgba(57, 255, 20, 0.12); border: 1px solid rgba(57, 255, 20, 0.35); color: #39ff14; }
+.quest-pw-msg.error { background: rgba(255, 23, 68, 0.12); border: 1px solid rgba(255, 23, 68, 0.35); color: #ff1744; }
+.quest-pw-msg small { display: block; font-weight: 400; color: #bad2f0; margin-top: 4px; font-size: 0.75rem; }
+
+.quest-pw-next-btn {
+  background: linear-gradient(135deg, #00f0ff, #b026ff);
+  color: #fff;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 9px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  margin: 0 auto;
+  display: none;
+  text-transform: uppercase;
+  box-shadow: 0 3px 15px rgba(0, 240, 255, 0.3);
+  transition: all 0.2s;
+}
+.quest-pw-next-btn.show { display: block; }
+.quest-pw-next-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 22px rgba(0, 240, 255, 0.5); }

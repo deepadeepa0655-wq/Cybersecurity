@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 4 – Virus Attack: Stop the Spread | Cyber Safety</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --bg-dark: #060b18;
+    --bg-panel: #0c1225;
+    --bg-card: #111a32;
+    --neon-green: #39ff14;
+    --neon-red: #ff1744;
+    --neon-blue: #00b0ff;
+    --neon-cyan: #00f0ff;
+    --neon-purple: #b026ff;
+    --neon-orange: #ff9100;
+    --neon-yellow: #ffea00;
+    --neon-ice: #80deea;
+    --neon-pink: #ff2d95;
+    --gold: #ffd700;
+    --healthy-bg: #0d2818;
+    --healthy-border: #1b5e20;
+    --infected-bg: #3e0a0a;
+    --infected-border: #d50000;
+    --firewall-bg: #0a1a3e;
+    --firewall-border: #1565c0;
+    --frozen-bg: #0a2e3e;
+    --frozen-border: #00acc1;
+    --cell-size: 62px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg-dark);
+    color: #e0e0e0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* ── Animated Background ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(rgba(57,255,20,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(57,255,20,0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridScroll 30s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+  @keyframes gridScroll {
+    to { transform: translate(40px,40px); }
+  }
+
+  .bg-particles {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .bg-particles .p {
+    position: absolute;
+    border-radius: 50%;
+    animation: drift linear infinite;
+    opacity: 0;
+  }
+  @keyframes drift {
+    0%   { opacity: 0; transform: translateY(100vh) scale(0.3); }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.15; }
+    100% { opacity: 0; transform: translateY(-5vh) scale(0.8); }
+  }
+
+  /* ── Layout ── */
+  .app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 12px 16px 30px; }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 14px; }
+  .level-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--neon-red), var(--neon-orange));
+    padding: 5px 24px; border-radius: 30px;
+    font-family: 'Orbitron', sans-serif; font-size: .72rem; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    box-shadow: 0 0 18px rgba(255,23,68,.35);
+    animation: pillPulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pillPulse {
+    0%,100% { box-shadow: 0 0 18px rgba(255,23,68,.35); }
+    50%     { box-shadow: 0 0 32px rgba(255,23,68,.6); }
+  }
+  .title {
+    font-family: 'Orbitron', sans-serif; font-size: 1.65rem; font-weight: 900;
+    background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan), var(--neon-green));
+    background-size: 200% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+    margin: 6px 0 2px;
+  }
+  @keyframes shimmer { to { background-position: 200% center; } }
+  .subtitle { font-size: .92rem; color: #5a7a9a; }
+
+  /* ── Stats Row ── */
+  .stats {
+    display: flex; justify-content: center; flex-wrap: wrap;
+    gap: 10px; margin-bottom: 14px;
+  }
+  .stat {
+    background: var(--bg-card); border: 1px solid rgba(0,240,255,.12);
+    border-radius: 14px; padding: 8px 18px; text-align: center; min-width: 105px;
+    backdrop-filter: blur(6px);
+  }
+  .stat-label {
+    font-family: 'Orbitron', sans-serif; font-size: .58rem;
+    letter-spacing: 1.8px; text-transform: uppercase; color: #4a6a8a; margin-bottom: 2px;
+  }
+  .stat-val {
+    font-family: 'Share Tech Mono', monospace; font-size: 1.3rem; font-weight: 700;
+  }
+  .stat-val.lv  { color: var(--neon-cyan); }
+  .stat-val.trn { color: var(--neon-purple); }
+  .stat-val.inf { color: var(--neon-red); }
+  .stat-val.hlth{ color: var(--neon-green); }
+  .stat-val.scr { color: var(--gold); }
+
+  /* ── Main Layout ── */
+  .main {
+    display: flex; gap: 18px; justify-content: center;
+    align-items: flex-start; flex-wrap: wrap;
+  }
+
+  /* ── Tool Panel ── */
+  .tool-panel {
+    background: var(--bg-panel); border: 1px solid rgba(0,240,255,.1);
+    border-radius: 18px; padding: 16px 14px; width: 190px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .tool-panel-title {
+    font-family: 'Orbitron', sans-serif; font-size: .65rem;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--neon-cyan); text-align: center;
+    padding-bottom: 8px; border-bottom: 1px solid rgba(0,240,255,.1);
+  }
+  .tool-btn {
+    background: linear-gradient(135deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    border: 2px solid rgba(255,255,255,.08);
+    border-radius: 14px; padding: 12px 10px;
+    cursor: pointer; transition: all .25s; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .tool-btn:hover { transform: translateY(-2px); }
+  .tool-btn.active { transform: translateY(-2px) scale(1.03); }
+  .tool-btn.active.av  { border-color: var(--neon-green);  box-shadow: 0 0 22px rgba(57,255,20,.3); background: rgba(57,255,20,.08); }
+  .tool-btn.active.fw  { border-color: var(--neon-blue);   box-shadow: 0 0 22px rgba(0,176,255,.3); background: rgba(0,176,255,.08); }
+  .tool-btn.active.fr  { border-color: var(--neon-ice);    box-shadow: 0 0 22px rgba(128,222,234,.3);background: rgba(128,222,234,.08);}
+  .tool-btn.active.cl  { border-color: var(--neon-purple); box-shadow: 0 0 22px rgba(176,38,255,.3);background: rgba(176,38,255,.08); }
+  .tool-btn.disabled { opacity: .35; pointer-events: none; }
+  .tool-icon { font-size: 1.6rem; margin-bottom: 3px; }
+  .tool-name { font-family: 'Orbitron', sans-serif; font-size: .62rem; letter-spacing: 1px; color: #b0bec5; }
+  .tool-count {
+    font-family: 'Share Tech Mono', monospace; font-size: .95rem; font-weight: 700;
+    margin-top: 2px;
+  }
+  .tool-btn.av .tool-count { color: var(--neon-green); }
+  .tool-btn.fw .tool-count { color: var(--neon-blue); }
+  .tool-btn.fr .tool-count { color: var(--neon-ice); }
+  .tool-btn.cl .tool-count { color: var(--neon-purple); }
+  .tool-hint {
+    font-size: .7rem; color: #4a6a8a; margin-top: 6px;
+    text-align: center; line-height: 1.4;
+    min-height: 50px;
+  }
+
+  /* ── Grid ── */
+  .grid-wrapper {
+    background: var(--bg-panel); border: 1px solid rgba(0,240,255,.1);
+    border-radius: 18px; padding: 16px;
+    box-shadow: 0 0 40px rgba(0,0,0,.4);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, var(--cell-size));
+    grid-template-rows: repeat(4, var(--cell-size));
+    gap: 6px;
+  }
+
+  /* ── Cell ── */
+  .cell {
+    width: var(--cell-size); height: var(--cell-size);
+    border-radius: 10px; border: 2px solid;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; cursor: pointer;
+    transition: background .3s, border-color .3s, box-shadow .3s, transform .15s;
+    position: relative; overflow: hidden;
+  }
+  .cell:hover { transform: scale(1.08); z-index: 2; }
+  .cell::after {
+    content: ''; position: absolute; inset: 0; border-radius: 8px;
+    opacity: 0; transition: opacity .3s;
+  }
+
+  /* Healthy */
+  .cell.healthy {
+    background: var(--healthy-bg); border-color: var(--healthy-border);
+  }
+  .cell.healthy:hover { box-shadow: 0 0 14px rgba(57,255,20,.25); }
+
+  /* Infected */
+  .cell.infected {
+    background: var(--infected-bg); border-color: var(--infected-border);
+    animation: infectPulse 1s ease-in-out infinite;
+  }
+  .cell.infected.fast-virus {
+    border-color: var(--neon-orange);
+    animation: infectPulseFast .6s ease-in-out infinite;
+  }
+  @keyframes infectPulse {
+    0%,100% { box-shadow: 0 0 8px rgba(213,0,0,.3); }
+    50%     { box-shadow: 0 0 22px rgba(213,0,0,.6); }
+  }
+  @keyframes infectPulseFast {
+    0%,100% { box-shadow: 0 0 8px rgba(255,145,0,.3); }
+    50%     { box-shadow: 0 0 22px rgba(255,145,0,.7); }
+  }
+
+  /* Firewall */
+  .cell.firewall {
+    background: var(--firewall-bg); border-color: var(--firewall-border);
+    box-shadow: 0 0 10px rgba(21,101,192,.25);
+  }
+
+  /* Frozen */
+  .cell.frozen {
+    background: var(--frozen-bg); border-color: var(--frozen-border);
+    animation: frozenShimmer 2s ease-in-out infinite;
+  }
+  @keyframes frozenShimmer {
+    0%,100% { box-shadow: 0 0 8px rgba(0,172,193,.2); }
+    50%     { box-shadow: 0 0 18px rgba(0,172,193,.45); }
+  }
+  .cell .freeze-counter {
+    position: absolute; bottom: 2px; right: 4px;
+    font-family: 'Orbitron', sans-serif; font-size: .55rem;
+    color: var(--neon-ice); font-weight: 700;
+  }
+
+  /* Cleaned flash */
+  .cell.cleaned-flash {
+    animation: cleanFlash .7s ease-out forwards;
+  }
+  @keyframes cleanFlash {
+    0%   { background: rgba(57,255,20,.35); box-shadow: 0 0 30px rgba(57,255,20,.6); }
+    100% { background: var(--healthy-bg); box-shadow: none; }
+  }
+
+  /* New infection flash */
+  .cell.infect-flash {
+    animation: newInfect .5s ease-out;
+  }
+  @keyframes newInfect {
+    0%   { transform: scale(1.2); background: rgba(255,23,68,.5); }
+    100% { transform: scale(1); }
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 14px; margin-top: 14px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: #7a8aaa; }
+  .legend-swatch {
+    width: 16px; height: 16px; border-radius: 4px; border: 2px solid;
+  }
+  .legend-swatch.h  { background: var(--healthy-bg);  border-color: var(--healthy-border); }
+  .legend-swatch.i  { background: var(--infected-bg); border-color: var(--infected-border); }
+  .legend-swatch.fw { background: var(--firewall-bg); border-color: var(--firewall-border); }
+  .legend-swatch.fz { background: var(--frozen-bg);   border-color: var(--frozen-border); }
+  .legend-swatch.fv { background: var(--infected-bg); border-color: var(--neon-orange); }
+
+  /* ── Modals ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,.82); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .4s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .modal {
+    background: linear-gradient(145deg, #111a32, #0c1225);
+    border: 2px solid rgba(0,240,255,.2);
+    border-radius: 24px; padding: 40px 50px; text-align: center;
+    max-width: 460px; width: 90%;
+    transform: scale(.85); transition: transform .4s;
+    box-shadow: 0 0 60px rgba(0,0,0,.6);
+  }
+  .modal-overlay.show .modal { transform: scale(1); }
+  .modal-icon { font-size: 4rem; margin-bottom: 10px; }
+  .modal-title {
+    font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900;
+    margin-bottom: 8px;
+  }
+  .modal-title.win  { color: var(--neon-green); text-shadow: 0 0 20px rgba(57,255,20,.4); }
+  .modal-title.lose { color: var(--neon-red);   text-shadow: 0 0 20px rgba(255,23,68,.4); }
+  .modal-sub { color: #7a8aaa; font-size: 1rem; margin-bottom: 6px; }
+  .modal-score { font-family: 'Share Tech Mono', monospace; font-size: 1.2rem; color: var(--gold); margin-bottom: 20px; }
+  .modal-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .mbtn {
+    font-family: 'Orbitron', sans-serif; font-size: .78rem; font-weight: 700;
+    letter-spacing: 1.5px; padding: 12px 30px; border-radius: 14px;
+    border: none; cursor: pointer; transition: all .25s; text-transform: uppercase;
+  }
+  .mbtn:hover { transform: translateY(-2px); }
+  .mbtn.primary {
+    background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+    color: #000; box-shadow: 0 4px 20px rgba(57,255,20,.3);
+  }
+  .mbtn.secondary {
+    background: transparent; border: 2px solid var(--neon-cyan); color: var(--neon-cyan);
+  }
+  .mbtn.retry {
+    background: linear-gradient(135deg, var(--neon-red), var(--neon-orange));
+    color: #fff; box-shadow: 0 4px 20px rgba(255,23,68,.3);
+  }
+
+  /* ── Level Select Modal ── */
+  .level-grid {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    margin: 18px 0;
+  }
+  .lv-btn {
+    width: 72px; height: 72px; border-radius: 14px;
+    background: var(--bg-card); border: 2px solid rgba(0,240,255,.12);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; transition: all .25s;
+    font-family: 'Orbitron', sans-serif;
+  }
+  .lv-btn:hover { border-color: var(--neon-cyan); transform: translateY(-3px); box-shadow: 0 0 18px rgba(0,240,255,.2); }
+  .lv-btn .lv-num { font-size: 1.4rem; font-weight: 900; color: var(--neon-cyan); }
+  .lv-btn .lv-diff { font-size: .5rem; letter-spacing: 1px; color: #5a7a9a; margin-top: 2px; }
+  .lv-btn.locked { opacity: .35; pointer-events: none; }
+  .lv-btn.locked .lv-num { color: #3a4a5a; }
+
+  /* ── Info bar ── */
+  .info-bar {
+    text-align: center; margin-top: 12px;
+    font-size: .82rem; color: #4a6a8a; line-height: 1.5;
+  }
+  .info-bar strong { color: var(--neon-cyan); }
+
+  /* ── Responsive ── */
+  @media (max-width: 850px) {
+    :root { --cell-size: 48px; }
+    .main { flex-direction: column; align-items: center; }
+    .tool-panel { flex-direction: row; width: 100%; max-width: 520px; flex-wrap: wrap; justify-content: center; }
+    .tool-panel-title { width: 100%; }
+    .tool-btn { flex: 1; min-width: 100px; }
+    .tool-hint { display: none; }
+    .title { font-size: 1.25rem; }
+  }
+  @media (max-width: 480px) {
+    :root { --cell-size: 38px; }
+    .stat { min-width: 80px; padding: 6px 10px; }
+    .stat-val { font-size: 1rem; }
+    .grid-wrapper { padding: 10px; }
+    .grid { gap: 3px; }
+    .cell { font-size: 1.1rem; border-radius: 7px; }
+    .tool-btn { min-width: 80px; padding: 8px 6px; }
+  }
+
+  /* ── Scanning line on grid ── */
+  .grid-wrapper::before {
+    content: '';
+    position: absolute; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+    opacity: .15; animation: scanLine 4s linear infinite;
+    pointer-events: none; z-index: 1;
+  }
+  @keyframes scanLine {
+    0%   { top: 16px; }
+    100% { top: calc(100% - 16px); }
+  }
+  .grid-wrapper { position: relative; overflow: hidden; }
+
+  /* ── Confetti canvas ── */
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+</style>
+</head>
+<body>
+
+<div class="bg-particles" id="bgParticles"></div>
+<canvas id="confetti"></canvas>
+
+<!-- ══════════ LEVEL SELECT MODAL ══════════ -->
+<div class="modal-overlay show" id="levelModal">
+  <div class="modal">
+    <div class="modal-icon">🦠</div>
+    <div class="modal-title win">VIRUS ATTACK</div>
+    <div class="modal-sub">Stop the Spread — Choose Your Level</div>
+    <div class="level-grid" id="levelGrid"></div>
+    <div style="font-size:.78rem; color:#4a6a8a; margin-top:6px;">
+      Eliminate all viruses before they take over the grid!
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ WIN MODAL ══════════ -->
+<div class="modal-overlay" id="winModal">
+  <div class="modal">
+    <div class="modal-icon">🏆</div>
+    <div class="modal-title win">SYSTEM SECURED!</div>
+    <div class="modal-sub">All viruses have been eliminated.</div>
+    <div class="modal-score" id="winScore"></div>
+    <div class="modal-btns">
+      <button class="mbtn primary" id="winNext">Next Level ▶</button>
+      <button class="mbtn secondary" onclick="showLevelSelect()">Levels</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ LOSE MODAL ══════════ -->
+<div class="modal-overlay" id="loseModal">
+  <div class="modal">
+    <div class="modal-icon">💀</div>
+    <div class="modal-title lose">SYSTEM COMPROMISED!</div>
+    <div class="modal-sub">The virus has taken over the entire network.</div>
+    <div class="modal-score" id="loseScore"></div>
+    <div class="modal-btns">
+      <button class="mbtn retry" id="retryBtn">Retry 🔄</button>
+      <button class="mbtn secondary" onclick="showLevelSelect()">Levels</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div class="app">
+  <div class="header">
+    <div class="level-pill" id="lvPill">⚡ LEVEL 1 ⚡</div>
+    <h1 class="title">🦠 Virus Attack – Stop the Spread (4×4)</h1>
+    <p class="subtitle">Select a defence tool, then click a cell on the 4×4 grid</p>
+  </div>
+
+  <div class="stats" id="statsBar">
+    <div class="stat"><div class="stat-label">Level</div><div class="stat-val lv" id="sLevel">1</div></div>
+    <div class="stat"><div class="stat-label">Turn</div><div class="stat-val trn" id="sTurn">0</div></div>
+    <div class="stat"><div class="stat-label">Infected</div><div class="stat-val inf" id="sInfected">0</div></div>
+    <div class="stat"><div class="stat-label">Healthy</div><div class="stat-val hlth" id="sHealthy">16</div></div>
+    <div class="stat"><div class="stat-label">Score</div><div class="stat-val scr" id="sScore">0</div></div>
+  </div>
+
+  <div class="main">
+    <!-- Tool Panel -->
+    <div class="tool-panel">
+      <div class="tool-panel-title">🛡️ Defence Tools</div>
+
+      <div class="tool-btn av" data-tool="antivirus" onclick="selectTool('antivirus')">
+        <div class="tool-icon">💊</div>
+        <div class="tool-name">Antivirus</div>
+      </div>
+      <div class="tool-btn fw" data-tool="firewall" onclick="selectTool('firewall')">
+        <div class="tool-icon">🛡️</div>
+        <div class="tool-name">Firewall</div>
+      </div>
+      <div class="tool-btn fr" data-tool="freeze" onclick="selectTool('freeze')">
+        <div class="tool-icon">🧊</div>
+        <div class="tool-name">Freeze</div>
+      </div>
+      <div class="tool-btn cl" data-tool="cleaner" onclick="selectTool('cleaner')">
+        <div class="tool-icon">🧹</div>
+        <div class="tool-name">Cleaner</div>
+      </div>
+
+      <div class="tool-hint" id="toolHint">Select a tool above, then click a cell on the grid.</div>
+    </div>
+
+    <!-- Grid -->
+    <div>
+      <div class="grid-wrapper">
+        <div class="grid" id="grid"></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch h"></div> Healthy</div>
+        <div class="legend-item"><div class="legend-swatch i"></div> Infected</div>
+        <div class="legend-item"><div class="legend-swatch fv"></div> Fast Virus</div>
+        <div class="legend-item"><div class="legend-swatch fw"></div> Firewall</div>
+        <div class="legend-item"><div class="legend-swatch fz"></div> Frozen</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-bar" id="infoBar">
+    <strong>Tip:</strong> Place firewalls strategically to block virus paths. Use freeze to buy time!
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  SOUND SYSTEM (Web Audio API – no external files needed)
+// ═══════════════════════════════════════════════════════════════
+const SFX = (() => {
+  let ctx;
+  function init() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  function tone(freq, dur, type='sine', vol=.15, ramp=true) {
+    init();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.value = vol;
+    if (ramp) g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + dur);
+    o.connect(g).connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + dur);
+  }
+  function noise(dur, vol=.08) {
+    init();
+    const bufSize = ctx.sampleRate * dur;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+    const src = ctx.createBufferSource();
+    const g = ctx.createGain();
+    src.buffer = buf;
+    g.gain.value = vol;
+    g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + dur);
+    src.connect(g).connect(ctx.destination);
+    src.start();
+  }
+  return {
+    click()    { tone(800, .08, 'sine', .1); },
+    infect()   { tone(120, .35, 'sawtooth', .08); noise(.2, .04); },
+    clean()    { tone(880, .12, 'sine', .12); setTimeout(()=>tone(1320, .15, 'sine', .1), 80); },
+    firewall() { tone(440, .1, 'triangle', .1); tone(660, .1, 'triangle', .08); },
+    freeze()   { tone(1600, .25, 'sine', .08); tone(2400, .2, 'sine', .06); },
+    cleaner()  { tone(660, .08, 'sine', .1); setTimeout(()=>tone(990, .08, 'sine', .1), 60); setTimeout(()=>tone(1320, .12, 'sine', .08), 120); },
+    win()      { [0,120,240,360,480].forEach((d,i)=>setTimeout(()=>tone(440*(1+i*.2), .3,'sine',.12), d)); },
+    lose()     { [0,200,400].forEach((d,i)=>setTimeout(()=>tone(300-i*60, .5,'sawtooth',.08), d)); },
+    spread()   { tone(180, .2, 'sawtooth', .04); },
+  };
+})();
+
+// ═══════════════════════════════════════════════════════════════
+//  LEVEL CONFIGURATION
+// ═══════════════════════════════════════════════════════════════
+const LEVELS = [
+  { // Level 1 – Easy
+    name: 'Rookie', viruses: 1, spreadChance: .10, maxSpreadPerTurn: 1, fastVirus: false,
+    desc: 'Gentle spread',
+  },
+  { // Level 2
+    name: 'Defender', viruses: 2, spreadChance: .12, maxSpreadPerTurn: 1, fastVirus: false,
+    desc: 'Slow spread',
+  },
+  { // Level 3
+    name: 'Specialist', viruses: 2, spreadChance: .15, maxSpreadPerTurn: 2, fastVirus: false,
+    desc: 'Controlled wave',
+  },
+  { // Level 4
+    name: 'Expert', viruses: 2, spreadChance: .18, maxSpreadPerTurn: 2, fastVirus: true, fastSpreadChance: .22,
+    desc: 'Steady mutation',
+  },
+  { // Level 5
+    name: 'Master', viruses: 3, spreadChance: .20, maxSpreadPerTurn: 2, fastVirus: true, fastSpreadChance: .25,
+    desc: 'Final test',
+  },
+];
+
+const HINTS = {
+  antivirus: '💊 <b>Antivirus</b> – Click an <b style="color:#ff1744">infected</b> cell to cure it.',
+  firewall:  '🛡️ <b>Firewall</b> – Click a <b style="color:#39ff14">healthy</b> cell to protect it. Blocks virus spread.',
+  freeze:    '🧊 <b>Freeze</b> – Click an <b style="color:#ff1744">infected</b> cell to freeze the virus for 3 turns.',
+  cleaner:   '🧹 <b>Cleaner</b> – Click an <b style="color:#ff1744">infected</b> cell to clean it <b>and</b> all adjacent infected cells.',
+};
+
+const TIPS = [
+  'Place <strong>firewalls</strong> ahead of the virus path to contain the spread!',
+  '<strong>Freeze</strong> buys you time — use it on the most dangerous outbreak.',
+  'The <strong>Cleaner</strong> is your most powerful tool — save it for clusters!',
+  'Viruses spread in 4 directions: ↑ ↓ ← →. Plan your defence accordingly.',
+  'A single <strong>firewall</strong> in a chokepoint can block an entire wave!',
+  '<strong>Fast viruses</strong> (orange) spread much quicker — prioritise them!',
+  'Don\'t waste <strong>antivirus</strong> on isolated cells — contain first, clean later.',
+  'Watch the <strong>infected count</strong> — if it climbs fast, change strategy!',
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════════════════════════
+const S = { HEALTHY: 0, INFECTED: 1, FIREWALL: 2, FROZEN: 3 };
+const ROWS = 4, COLS = 4;
+
+let grid = [];           // 2D array: { state, freezeCounter, fast }
+let currentLevel = 0;
+let currentTool = null;
+let tools = {};
+let turn = 0;
+let score = 0;
+let totalScore = 0;
+let processing = false;  // true while virus is spreading (lock input)
+let gameOver = false;
+let unlockedLevel = +(localStorage.getItem('va_unlock') || 1);
+
+// ═══════════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+function pick(a) { return a[Math.floor(Math.random()*a.length)]; }
+function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+function adj(r,c) {
+  const n=[];
+  if(r>0) n.push([r-1,c]);
+  if(r<ROWS-1) n.push([r+1,c]);
+  if(c>0) n.push([r,c-1]);
+  if(c<COLS-1) n.push([r,c+1]);
+  return n;
+}
+function wait(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+// ═══════════════════════════════════════════════════════════════
+//  LEVEL SELECT
+// ═══════════════════════════════════════════════════════════════
+function buildLevelSelect() {
+  const g = $('levelGrid');
+  g.innerHTML = '';
+  LEVELS.forEach((lv, i) => {
+    const locked = i+1 > unlockedLevel;
+    const btn = document.createElement('div');
+    btn.className = 'lv-btn' + (locked ? ' locked' : '');
+    btn.innerHTML = `<div class="lv-num">${locked ? '🔒' : (i+1)}</div><div class="lv-diff">${lv.desc}</div>`;
+    if (!locked) btn.onclick = () => startGame(i);
+    g.appendChild(btn);
+  });
+}
+
+function showLevelSelect() {
+  hideAllModals();
+  buildLevelSelect();
+  $('levelModal').classList.add('show');
+}
+
+function hideAllModals() {
+  ['levelModal','winModal','loseModal'].forEach(id => $(id).classList.remove('show'));
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT GAME
+// ═══════════════════════════════════════════════════════════════
+function startGame(levelIdx) {
+  hideAllModals();
+  currentLevel = levelIdx;
+  const lv = LEVELS[levelIdx];
+
+  // Reset state
+  turn = 0;
+  score = 0;
+  gameOver = false;
+  processing = false;
+  currentTool = null;
+  tools = { ...lv.tools };
+
+  // Build empty grid
+  grid = [];
+  for (let r = 0; r < ROWS; r++) {
+    grid[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      grid[r][c] = { state: S.HEALTHY, freezeCounter: 0, fast: false };
+    }
+  }
+
+  // Place viruses randomly
+  const allCells = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) allCells.push([r,c]);
+  const shuffled = shuffle(allCells);
+  for (let i = 0; i < lv.viruses; i++) {
+    const [r,c] = shuffled[i];
+    grid[r][c].state = S.INFECTED;
+    // In levels with fast virus, make roughly half of them fast
+    if (lv.fastVirus && i % 2 === 0) grid[r][c].fast = true;
+  }
+
+  // Update UI
+  $('lvPill').textContent = `⚡ LEVEL ${levelIdx+1} ⚡`;
+  $('sLevel').textContent = levelIdx + 1;
+  $('infoBar').innerHTML = `<strong>Tip:</strong> ${pick(TIPS)}`;
+
+  renderGrid();
+  updateToolUI();
+  updateStats();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RENDER GRID
+// ═══════════════════════════════════════════════════════════════
+function renderGrid() {
+  const el = $('grid');
+  el.innerHTML = '';
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell ' + cellClass(r,c);
+      cell.id = `c${r}_${c}`;
+      cell.innerHTML = cellIcon(r,c);
+      cell.addEventListener('click', () => onCellClick(r,c));
+      el.appendChild(cell);
+    }
+  }
+}
+
+function cellClass(r,c) {
+  const g = grid[r][c];
+  switch (g.state) {
+    case S.HEALTHY:  return 'healthy';
+    case S.INFECTED: return 'infected' + (g.fast ? ' fast-virus' : '');
+    case S.FIREWALL: return 'firewall';
+    case S.FROZEN:   return 'frozen';
+  }
+}
+
+function cellIcon(r,c) {
+  const g = grid[r][c];
+  let html = '';
+  switch (g.state) {
+    case S.HEALTHY:  html = '💻'; break;
+    case S.INFECTED: html = g.fast ? '🔥' : '🦠'; break;
+    case S.FIREWALL: html = '🛡️'; break;
+    case S.FROZEN:   html = '❄️'; html += `<span class="freeze-counter">${g.freezeCounter}</span>`; break;
+  }
+  return html;
+}
+
+function updateCell(r,c, extraClass='') {
+  const el = $(`c${r}_${c}`);
+  if (!el) return;
+  el.className = 'cell ' + cellClass(r,c) + (extraClass ? ' '+extraClass : '');
+  el.innerHTML = cellIcon(r,c);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  STATS & TOOL UI
+// ═══════════════════════════════════════════════════════════════
+function countState(state) {
+  let n = 0;
+  for (let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(grid[r][c].state===state) n++;
+  return n;
+}
+
+function updateStats() {
+  $('sTurn').textContent = turn;
+  const inf = countState(S.INFECTED) + countState(S.FROZEN);
+  const hlth = countState(S.HEALTHY) + countState(S.FIREWALL);
+  $('sInfected').textContent = inf;
+  $('sHealthy').textContent = hlth;
+  $('sScore').textContent = totalScore + score;
+}
+
+function updateToolUI() {
+  // Highlight selected tool
+  document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tool === currentTool);
+  });
+
+  // Hint text
+  if (currentTool) {
+    $('toolHint').innerHTML = HINTS[currentTool];
+  } else {
+    $('toolHint').innerHTML = 'Select a tool above, then click a cell on the grid.';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  TOOL SELECTION
+// ═══════════════════════════════════════════════════════════════
+function selectTool(tool) {
+  if (processing || gameOver) return;
+  SFX.click();
+  currentTool = currentTool === tool ? null : tool;
+  updateToolUI();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CELL CLICK – APPLY TOOL
+// ═══════════════════════════════════════════════════════════════
+async function onCellClick(r, c) {
+  if (processing || gameOver || !currentTool) return;
+
+  const cell = grid[r][c];
+  let valid = false;
+
+  switch (currentTool) {
+    case 'antivirus':
+      if (cell.state === S.INFECTED || cell.state === S.FROZEN) {
+        cell.state = S.HEALTHY;
+        cell.fast = false;
+        cell.freezeCounter = 0;
+        updateCell(r, c, 'cleaned-flash');
+        SFX.clean();
+        score += 10;
+        valid = true;
+      }
+      break;
+
+    case 'firewall':
+      if (cell.state === S.HEALTHY) {
+        cell.state = S.FIREWALL;
+        updateCell(r, c);
+        SFX.firewall();
+        score += 5;
+        valid = true;
+      }
+      break;
+
+    case 'freeze':
+      if (cell.state === S.INFECTED) {
+        cell.state = S.FROZEN;
+        cell.freezeCounter = 3;
+        updateCell(r, c);
+        SFX.freeze();
+        score += 5;
+        valid = true;
+      }
+      break;
+
+    case 'cleaner':
+      if (cell.state === S.INFECTED || cell.state === S.FROZEN) {
+        const cleaned = [[r,c]];
+        cell.state = S.HEALTHY;
+        cell.fast = false;
+        cell.freezeCounter = 0;
+        // Also clean adjacent infected
+        adj(r,c).forEach(([nr,nc]) => {
+          if (grid[nr][nc].state === S.INFECTED || grid[nr][nc].state === S.FROZEN) {
+            grid[nr][nc].state = S.HEALTHY;
+            grid[nr][nc].fast = false;
+            grid[nr][nc].freezeCounter = 0;
+            cleaned.push([nr,nc]);
+          }
+        });
+        cleaned.forEach(([cr,cc]) => updateCell(cr,cc,'cleaned-flash'));
+        SFX.cleaner();
+        score += cleaned.length * 10;
+        valid = true;
+      }
+      break;
+  }
+
+  if (!valid) return;
+
+  turn++;
+  updateToolUI();
+  updateStats();
+
+  // Check win BEFORE virus spreads
+  if (checkWin()) return;
+
+  // Virus spread phase
+  processing = true;
+  await virusSpread();
+  processing = false;
+
+  // Decrement freeze counters
+  decrementFreezes();
+
+  updateStats();
+
+  // Check lose
+  checkLose();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  VIRUS SPREAD
+// ═══════════════════════════════════════════════════════════════
+async function virusSpread() {
+  const lv = LEVELS[currentLevel];
+  const newInfections = [];
+
+  // Gather all currently infected cells (snapshot so new infections don't cascade this turn)
+  const infected = [];
+  for (let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) {
+    if (grid[r][c].state === S.INFECTED) infected.push([r,c, grid[r][c].fast]);
+  }
+
+  const maxSpread = lv.maxSpreadPerTurn || 1;
+  for (const [r, c, fast] of infected) {
+    if (newInfections.length >= maxSpread) break;
+    const neighbors = shuffle(adj(r, c));
+    const chance = fast ? (lv.fastSpreadChance || lv.spreadChance) : lv.spreadChance;
+    for (const [nr, nc] of neighbors) {
+      if (newInfections.length >= maxSpread) break;
+      if (grid[nr][nc].state === S.HEALTHY && Math.random() < chance) {
+        if (!newInfections.some(x => x[0] === nr && x[1] === nc)) {
+          newInfections.push([nr, nc, fast && Math.random() < 0.25]);
+        }
+      }
+    }
+  }
+
+  // Animate new infections sequentially with gentle delay
+  for (const [nr, nc, fast] of newInfections) {
+    if (grid[nr][nc].state !== S.HEALTHY) continue;
+    grid[nr][nc].state = S.INFECTED;
+    grid[nr][nc].fast = fast;
+    updateCell(nr, nc, 'infect-flash');
+    SFX.spread();
+    await wait(120);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  FREEZE COUNTER TICK
+// ═══════════════════════════════════════════════════════════════
+function decrementFreezes() {
+  for (let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) {
+    const cell = grid[r][c];
+    if (cell.state === S.FROZEN) {
+      cell.freezeCounter--;
+      if (cell.freezeCounter <= 0) {
+        cell.state = S.INFECTED; // thaw — virus comes back
+        cell.freezeCounter = 0;
+      }
+      updateCell(r,c);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  WIN / LOSE CHECKS
+// ═══════════════════════════════════════════════════════════════
+function checkWin() {
+  const inf = countState(S.INFECTED);
+  const frz = countState(S.FROZEN);
+  if (inf === 0 && frz === 0) {
+    gameOver = true;
+    totalScore += score;
+    // Unlock next level
+    if (currentLevel + 2 > unlockedLevel) {
+      unlockedLevel = Math.min(currentLevel + 2, LEVELS.length);
+      localStorage.setItem('va_unlock', unlockedLevel);
+    }
+    setTimeout(() => {
+      SFX.win();
+      launchConfetti();
+      $('winScore').textContent = `Score: ${totalScore}  ·  Turns: ${turn}`;
+      $('winModal').classList.add('show');
+      $('winNext').onclick = () => {
+        if (currentLevel + 1 < LEVELS.length) startGame(currentLevel + 1);
+        else { hideAllModals(); showLevelSelect(); }
+      };
+    }, 300);
+    return true;
+  }
+  return false;
+}
+
+function checkLose() {
+  // Lose only if every cell is infected/frozen (entire network overtaken)
+  let allGone = true;
+  for (let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) {
+    if (grid[r][c].state === S.HEALTHY || grid[r][c].state === S.FIREWALL) {
+      allGone = false;
+      break;
+    }
+  }
+
+  if (allGone) {
+    gameOver = true;
+    setTimeout(() => {
+      SFX.lose();
+      $('loseScore').textContent = `Score: ${totalScore + score}  ·  Turns: ${turn}`;
+      $('loseModal').classList.add('show');
+      $('retryBtn').onclick = () => startGame(currentLevel);
+    }, 400);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CONFETTI
+// ═══════════════════════════════════════════════════════════════
+function launchConfetti() {
+  const canvas = $('confetti');
+  const ctx = canvas.getContext('2d');
+  canvas.width = innerWidth; canvas.height = innerHeight;
+  const colors = ['#39ff14','#00f0ff','#ff2d95','#b026ff','#ffd700','#ff9100','#00b0ff'];
+  const particles = Array.from({length:120}, () => ({
+    x: innerWidth/2 + (Math.random()-.5)*400,
+    y: innerHeight/2,
+    vx: (Math.random()-.5)*14,
+    vy: -Math.random()*14-3,
+    color: pick(colors),
+    size: 3+Math.random()*5,
+    rot: Math.random()*360,
+    rv: (Math.random()-.5)*12,
+    life: 1,
+  }));
+  function frame() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive=false;
+    particles.forEach(p=>{
+      if(p.life<=0)return;
+      alive=true;
+      p.x+=p.vx; p.y+=p.vy; p.vy+=.22; p.rot+=p.rv; p.life-=.01;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.globalAlpha=p.life;
+      ctx.fillStyle=p.color;
+      ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+      ctx.restore();
+    });
+    if(alive) requestAnimationFrame(frame);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  frame();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  BACKGROUND PARTICLES
+// ═══════════════════════════════════════════════════════════════
+function initBgParticles() {
+  const el = $('bgParticles');
+  for (let i = 0; i < 25; i++) {
+    const d = document.createElement('div');
+    d.className = 'p';
+    d.style.left = Math.random()*100+'%';
+    d.style.width = d.style.height = (2+Math.random()*3)+'px';
+    d.style.background = pick(['var(--neon-green)','var(--neon-cyan)','var(--neon-red)','var(--neon-purple)']);
+    d.style.animationDuration = (6+Math.random()*12)+'s';
+    d.style.animationDelay = Math.random()*10+'s';
+    el.appendChild(d);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  const key = e.key.toLowerCase();
+  if (key === '1' || key === 'a') selectTool('antivirus');
+  else if (key === '2' || key === 'f') selectTool('firewall');
+  else if (key === '3' || key === 'r') selectTool('freeze');
+  else if (key === '4' || key === 'c') selectTool('cleaner');
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+initBgParticles();
+buildLevelSelect();
+</script>
+</body>
+</html>

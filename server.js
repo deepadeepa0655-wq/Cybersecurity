@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-const PORT = Number(process.env.PORT || 5000);
+let PORT = Number(process.env.PORT || 3000);
 if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
   throw new Error('PORT must be a whole number from 1 to 65535.');
 }
@@ -21,7 +21,7 @@ app.use((req, res, next) => {
     "object-src 'none'",
     "frame-ancestors 'none'",
     "form-action 'self'",
-    "script-src 'self' https://www.gstatic.com",
+    "script-src 'self' 'unsafe-inline' https://www.gstatic.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' data: https://fonts.gstatic.com",
     "img-src 'self' data: https:",
@@ -66,8 +66,26 @@ app.use((err, req, res, next) => {
   return res.status(500).json({ error: 'The request could not be completed.' });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`CyberQuest is ready on port ${PORT}.`);
-});
+function listen(port) {
+  const s = app.listen(port, '0.0.0.0', () => {
+    console.log(`\n  ╔══════════════════════════════════════════════════════════╗`);
+    console.log(`  ║  🛡️   CYBERSHIELD / CYBERQUEST GAME HUB RUNNING          ║`);
+    console.log(`  ╠══════════════════════════════════════════════════════════╣`);
+    console.log(`  ║  🌐  URL: http://localhost:${port}                           ║`);
+    console.log(`  ╚══════════════════════════════════════════════════════════╝\n`);
+  });
+
+  s.on('error', (err) => {
+    if (err.code === 'EADDRINUSE' || err.code === 'EACCES') {
+      const nextPort = port === 3000 ? 5000 : port + 1;
+      console.warn(`[Port ${port} unavailable (${err.code}), trying port ${nextPort}...]`);
+      listen(nextPort);
+    } else {
+      console.error('Server error:', err);
+    }
+  });
+}
+
+listen(PORT);
 
 module.exports = app;

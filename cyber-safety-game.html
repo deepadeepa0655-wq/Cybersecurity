@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Defender: All-In-One Cyber Safety Game</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --bg-dark: #060b18;
+    --bg-panel: #0c1225;
+    --bg-card: #111a32;
+    --neon-cyan: #00f0ff;
+    --neon-green: #39ff14;
+    --neon-red: #ff1744;
+    --neon-blue: #00b0ff;
+    --neon-purple: #b026ff;
+    --neon-orange: #ff9100;
+    --neon-pink: #ff2d95;
+    --neon-ice: #80deea;
+    --gold: #ffd700;
+    --cell-size: 60px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg-dark);
+    color: #e0e8f5;
+    min-height: 100vh;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* ── Background Grid & Particles ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(rgba(0,240,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridScroll 35s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+  @keyframes gridScroll { to { transform: translate(40px, 40px); } }
+
+  .scanline {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  }
+
+  .bg-particles {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .bg-particles .p {
+    position: absolute; border-radius: 50%; animation: drift linear infinite; opacity: 0;
+  }
+  @keyframes drift {
+    0%   { opacity: 0; transform: translateY(100vh) scale(0.3); }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.15; }
+    100% { opacity: 0; transform: translateY(-5vh) scale(0.8); }
+  }
+
+  /* ── Canvas overlays ── */
+  canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+
+  .hidden { display: none !important; }
+
+  /* ── Universal Animations ── */
+  @keyframes shimmer { to { background-position: 200% center; } }
+  @keyframes pulseGlow { 0%,100% { box-shadow: 0 0 15px rgba(0,240,255,.3); } 50% { box-shadow: 0 0 30px rgba(0,240,255,.6); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+  @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ═══════════════════════════════════════════════
+     GLOBAL TOP BAR (Agent Hub & Tabs)
+     ═══════════════════════════════════════════════ */
+  .top-navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(12, 18, 37, 0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-icon {
+    font-size: 1.8rem;
+    animation: pulseGlow 3s infinite;
+  }
+  .brand-text h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green), var(--neon-cyan));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite;
+  }
+  .brand-text span {
+    font-size: 0.72rem;
+    color: #6a82a8;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* Nav Tabs */
+  .nav-tabs {
+    display: flex;
+    gap: 8px;
+    background: rgba(6, 11, 24, 0.7);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 240, 255, 0.12);
+  }
+  .nav-tab {
+    background: transparent;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #7b92b2;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-tab:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .nav-tab.active {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(176, 38, 255, 0.25));
+    color: var(--neon-cyan);
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.25);
+    border: 1px solid rgba(0, 240, 255, 0.35);
+  }
+
+  /* Global Agent Status Badge */
+  .agent-status {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .status-badge {
+    background: var(--bg-card);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 10px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+  }
+  .badge-label { color: #5a7499; text-transform: uppercase; letter-spacing: 1px; font-family: 'Orbitron', sans-serif; }
+  .badge-val { font-family: 'Share Tech Mono', monospace; font-size: 1.05rem; font-weight: 700; }
+  .badge-val.score { color: var(--gold); }
+  .badge-val.rank { color: var(--neon-green); font-size: 0.82rem; }
+
+  .audio-toggle-btn {
+    background: var(--bg-card);
+    border: 1px solid rgba(0,240,255,0.15);
+    border-radius: 8px;
+    color: var(--neon-cyan);
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+  .audio-toggle-btn:hover { border-color: var(--neon-cyan); transform: scale(1.05); }
+
+  /* ── Main Container ── */
+  .main-app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ═══════════════════════════════════════════════
+     VIEW 0: ALL-IN-ONE HUB / DASHBOARD
+     ═══════════════════════════════════════════════ */
+  .hub-view {
+    text-align: center;
+    padding: 20px 0 40px;
+    animation: popIn 0.4s ease-out;
+  }
+  .hub-banner-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+    padding: 6px 26px;
+    border-radius: 30px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    box-shadow: 0 0 20px rgba(176,38,255,0.4);
+    margin-bottom: 12px;
+  }
+  .hub-main-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan), var(--neon-green));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite;
+    margin-bottom: 8px;
+  }
+  .hub-desc {
+    font-size: 1.05rem;
+    color: #6a82a8;
+    max-width: 620px;
+    margin: 0 auto 35px;
+    line-height: 1.6;
+  }
+
+  .campaign-box {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(176, 38, 255, 0.05));
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 20px;
+    padding: 22px 28px;
+    max-width: 720px;
+    margin: 0 auto 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+  .campaign-info { text-align: left; }
+  .campaign-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: #fff; margin-bottom: 4px; }
+  .campaign-sub { font-size: 0.88rem; color: #8ea3c4; }
+  .campaign-start-btn {
+    background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+    color: #040914;
+    border: none;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    padding: 14px 32px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(57,255,20,0.35);
+    transition: all 0.25s;
+    text-transform: uppercase;
+  }
+  .campaign-start-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 0 30px rgba(57,255,20,0.6); }
+
+  .hub-cards {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .hub-card {
+    background: linear-gradient(145deg, #131c33, #0d1426);
+    border: 2px solid rgba(0,240,255,0.12);
+    border-radius: 20px;
+    padding: 30px 26px;
+    width: 340px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .hub-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  }
+  .hub-card.v-card::before { background: linear-gradient(90deg, var(--neon-red), var(--neon-orange)); }
+  .hub-card.p-card::before { background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink)); }
+  .hub-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 10px 35px rgba(0, 240, 255, 0.15);
+  }
+  .hc-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 14px;
+  }
+  .hub-card.v-card .hc-badge { background: rgba(255,23,68,0.2); color: var(--neon-red); border: 1px solid rgba(255,23,68,0.3); }
+  .hub-card.p-card .hc-badge { background: rgba(176,38,255,0.2); color: var(--neon-pink); border: 1px solid rgba(176,38,255,0.3); }
+  .hc-icon { font-size: 3rem; margin-bottom: 12px; }
+  .hc-title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .hc-desc { font-size: 0.88rem; color: #7f95b5; line-height: 1.5; margin-bottom: 20px; }
+  .hc-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+  }
+
+  /* ═══════════════════════════════════════════════
+     VIEW 1: LEVEL 4 – VIRUS ATTACK
+     ═══════════════════════════════════════════════ */
+  .level-view {
+    animation: popIn 0.35s ease-out;
+  }
+  .view-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .view-pill {
+    display: inline-block;
+    padding: 5px 22px;
+    border-radius: 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .view-pill.v-pill { background: linear-gradient(135deg, var(--neon-red), var(--neon-orange)); box-shadow: 0 0 15px rgba(255,23,68,0.4); }
+  .view-pill.p-pill { background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink)); box-shadow: 0 0 15px rgba(176,38,255,0.4); }
+  .view-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #fff, var(--neon-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+  .view-sub { font-size: 0.95rem; color: #7289a8; }
+
+  /* Level 4 Stats Strip */
+  .v-stats-strip {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .v-stat-box {
+    background: var(--bg-card);
+    border: 1px solid rgba(0, 240, 255, 0.12);
+    border-radius: 12px;
+    padding: 8px 18px;
+    text-align: center;
+    min-width: 100px;
+  }
+  .v-stat-lbl { font-family: 'Orbitron', sans-serif; font-size: 0.58rem; letter-spacing: 1.5px; color: #526f94; text-transform: uppercase; }
+  .v-stat-num { font-family: 'Share Tech Mono', monospace; font-size: 1.3rem; font-weight: 700; }
+  .v-stat-num.lv { color: var(--neon-cyan); }
+  .v-stat-num.trn { color: var(--neon-purple); }
+  .v-stat-num.inf { color: var(--neon-red); }
+  .v-stat-num.hlth { color: var(--neon-green); }
+  .v-stat-num.scr { color: var(--gold); }
+
+  /* Level 4 Main Arena Layout */
+  .v-arena {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* Tool Panel */
+  .tool-dock {
+    background: var(--bg-panel);
+    border: 1px solid rgba(0, 240, 255, 0.12);
+    border-radius: 18px;
+    padding: 16px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dock-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: var(--neon-cyan);
+    text-align: center;
+    text-transform: uppercase;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+  }
+  .tool-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px 10px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: center;
+    position: relative;
+  }
+  .tool-item:hover { transform: translateY(-2px); border-color: rgba(0, 240, 255, 0.4); }
+  .tool-item.selected {
+    transform: translateY(-2px) scale(1.03);
+  }
+  .tool-item.selected.av { border-color: var(--neon-green); background: rgba(57,255,20,0.1); box-shadow: 0 0 18px rgba(57,255,20,0.3); }
+  .tool-item.selected.fw { border-color: var(--neon-blue); background: rgba(0,176,255,0.1); box-shadow: 0 0 18px rgba(0,176,255,0.3); }
+  .tool-item.selected.fr { border-color: var(--neon-ice); background: rgba(128,222,234,0.1); box-shadow: 0 0 18px rgba(128,222,234,0.3); }
+  .tool-item.selected.cl { border-color: var(--neon-purple); background: rgba(176,38,255,0.1); box-shadow: 0 0 18px rgba(176,38,255,0.3); }
+  .tool-item.depleted { opacity: 0.35; pointer-events: none; }
+  .ti-icon { font-size: 1.6rem; margin-bottom: 2px; }
+  .ti-name { font-family: 'Orbitron', sans-serif; font-size: 0.65rem; color: #a4b8d4; }
+  .ti-count { font-family: 'Share Tech Mono', monospace; font-size: 1rem; font-weight: 700; margin-top: 3px; }
+  .tool-item.av .ti-count { color: var(--neon-green); }
+  .tool-item.fw .ti-count { color: var(--neon-blue); }
+  .tool-item.fr .ti-count { color: var(--neon-ice); }
+  .tool-item.cl .ti-count { color: var(--neon-purple); }
+  .tool-desc-box {
+    font-size: 0.72rem;
+    color: #6581a6;
+    line-height: 1.4;
+    text-align: center;
+    min-height: 52px;
+    margin-top: 4px;
+  }
+
+  /* 8x8 Grid Wrapper */
+  .grid-container {
+    background: var(--bg-panel);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .grid-container::before {
+    content: '';
+    position: absolute; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+    opacity: 0.2; animation: vScan 4s linear infinite; pointer-events: none; z-index: 1;
+  }
+  @keyframes vScan { 0% { top: 16px; } 100% { top: calc(100% - 16px); } }
+
+  .matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(8, var(--cell-size));
+    grid-template-rows: repeat(8, var(--cell-size));
+    gap: 4px;
+  }
+  .m-cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border-radius: 9px;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45rem;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s, transform 0.15s, box-shadow 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .m-cell:hover { transform: scale(1.08); z-index: 2; }
+  .m-cell.healthy { background: #0d2818; border-color: #1b5e20; }
+  .m-cell.healthy:hover { box-shadow: 0 0 14px rgba(57,255,20,0.3); }
+  .m-cell.infected { background: #3e0a0a; border-color: #d50000; animation: infectGlow 1s ease-in-out infinite; }
+  .m-cell.infected.fast-virus { border-color: var(--neon-orange); animation: infectGlowF 0.6s ease-in-out infinite; }
+  @keyframes infectGlow { 0%,100% { box-shadow: 0 0 8px rgba(213,0,0,0.3); } 50% { box-shadow: 0 0 22px rgba(213,0,0,0.65); } }
+  @keyframes infectGlowF { 0%,100% { box-shadow: 0 0 8px rgba(255,145,0,0.3); } 50% { box-shadow: 0 0 22px rgba(255,145,0,0.7); } }
+  .m-cell.firewall { background: #0a1a3e; border-color: #1565c0; box-shadow: 0 0 10px rgba(21,101,192,0.3); }
+  .m-cell.frozen { background: #0a2e3e; border-color: #00acc1; animation: freezeShim 2s infinite; }
+  @keyframes freezeShim { 0%,100% { box-shadow: 0 0 6px rgba(0,172,193,0.25); } 50% { box-shadow: 0 0 16px rgba(0,172,193,0.5); } }
+  .m-cell .freeze-num {
+    position: absolute; bottom: 2px; right: 4px;
+    font-family: 'Orbitron', sans-serif; font-size: 0.55rem; color: var(--neon-ice); font-weight: 700;
+  }
+  .m-cell.flash-clean { animation: cleanAnim 0.7s forwards; }
+  @keyframes cleanAnim { 0% { background: rgba(57,255,20,0.4); box-shadow: 0 0 25px rgba(57,255,20,0.7); } 100% { background: #0d2818; box-shadow: none; } }
+  .m-cell.flash-infect { animation: infectAnim 0.5s ease-out; }
+  @keyframes infectAnim { 0% { transform: scale(1.2); background: rgba(255,23,68,0.6); } 100% { transform: scale(1); } }
+
+  /* Legend & Level selector bar */
+  .grid-bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .matrix-legend {
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .leg-item { display: flex; align-items: center; gap: 6px; font-size: 0.76rem; color: #728caa; }
+  .leg-box { width: 14px; height: 14px; border-radius: 3px; border: 2px solid; }
+  .leg-box.h { background: #0d2818; border-color: #1b5e20; }
+  .leg-box.i { background: #3e0a0a; border-color: #d50000; }
+  .leg-box.fv { background: #3e0a0a; border-color: var(--neon-orange); }
+  .leg-box.fw { background: #0a1a3e; border-color: #1565c0; }
+  .leg-box.fz { background: #0a2e3e; border-color: #00acc1; }
+
+  .stage-pills {
+    display: flex; gap: 6px;
+  }
+  .stage-btn {
+    background: var(--bg-card);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #6581a6;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .stage-btn:hover { border-color: var(--neon-cyan); color: #fff; }
+  .stage-btn.active {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+  }
+  .stage-btn.locked { opacity: 0.35; pointer-events: none; }
+
+  /* ═══════════════════════════════════════════════
+     VIEW 2: LEVEL 7 – PASSWORD GUESSING GAME
+     ═══════════════════════════════════════════════ */
+  .p-stats-strip {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .p-stat-box {
+    background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(0,240,255,0.02));
+    border: 1px solid rgba(0,240,255,0.2);
+    border-radius: 14px;
+    padding: 10px 24px;
+    text-align: center;
+    min-width: 130px;
+  }
+  .p-stat-lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--neon-cyan); font-family: 'Orbitron', sans-serif; margin-bottom: 4px; }
+  .p-stat-val { font-family: 'Share Tech Mono', monospace; font-size: 1.45rem; font-weight: 700; color: #fff; }
+  .p-stat-val.score { color: var(--gold); }
+  .p-stat-val.streak { color: var(--neon-green); }
+  .streak-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+  .streak-fill { height: 100%; background: linear-gradient(90deg, var(--neon-green), var(--gold)); border-radius: 2px; transition: width 0.4s ease; }
+
+  .p-arena {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media(max-width: 820px) { .p-arena { grid-template-columns: 1fr; } }
+
+  /* Profile Card */
+  .profile-panel {
+    background: linear-gradient(145deg, #131c33, #0d1426);
+    border: 1px solid rgba(0,240,255,0.15);
+    border-radius: 20px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  }
+  .profile-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+    animation: shimmer 3s linear infinite; background-size: 200% auto;
+  }
+  .prof-hdr {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 16px; padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,240,255,0.1);
+    font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: var(--neon-cyan); letter-spacing: 2px; text-transform: uppercase;
+  }
+  .avatar-block { text-align: center; margin-bottom: 18px; }
+  .avatar-circle {
+    width: 84px; height: 84px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; margin: 0 auto 10px;
+    box-shadow: 0 0 25px rgba(0,240,255,0.3);
+  }
+  .avatar-name { font-family: 'Orbitron', sans-serif; font-size: 1.25rem; font-weight: 700; color: #fff; }
+
+  .profile-fields { display: flex; flex-direction: column; gap: 9px; }
+  .field-row {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(0,240,255,0.035);
+    border: 1px solid rgba(0,240,255,0.08);
+    border-radius: 10px; padding: 9px 14px;
+    transition: all 0.25s;
+  }
+  .field-row:hover { background: rgba(0,240,255,0.07); border-color: rgba(0,240,255,0.2); transform: translateX(4px); }
+  .field-icon { font-size: 1.2rem; width: 28px; text-align: center; }
+  .field-info { flex: 1; }
+  .field-lbl { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: #5a7499; font-family: 'Orbitron', sans-serif; }
+  .field-val { font-family: 'Share Tech Mono', monospace; font-size: 0.95rem; color: #d0deee; }
+  .field-row.highlight-flash {
+    animation: flashField 1.5s ease-in-out;
+  }
+  @keyframes flashField {
+    0% { border-color: rgba(0,240,255,0.08); background: rgba(0,240,255,0.035); }
+    30% { border-color: var(--neon-pink); background: rgba(255,45,149,0.15); box-shadow: 0 0 15px rgba(255,45,149,0.3); }
+    100% { border-color: rgba(0,240,255,0.08); background: rgba(0,240,255,0.035); }
+  }
+
+  /* Password Cards Side */
+  .password-panel { display: flex; flex-direction: column; gap: 14px; }
+  .prompt-card {
+    text-align: center;
+    background: rgba(12, 18, 37, 0.6);
+    border: 1px solid rgba(0, 240, 255, 0.1);
+    border-radius: 14px;
+    padding: 12px;
+  }
+  .prompt-title { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: var(--neon-pink); letter-spacing: 1px; margin-bottom: 4px; }
+  .prompt-sub { font-size: 0.85rem; color: #6d84a3; }
+
+  .pw-options-list { display: flex; flex-direction: column; gap: 12px; }
+  .pw-card {
+    background: linear-gradient(145deg, #172138, #111a2e);
+    border: 2px solid rgba(0,240,255,0.1);
+    border-radius: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .pw-card:hover {
+    transform: translateY(-2px) scale(1.02);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 6px 25px rgba(0,240,255,0.15);
+  }
+  .pw-card.disabled { pointer-events: none; opacity: 0.5; }
+  .pw-card.correct {
+    border-color: var(--neon-green) !important;
+    background: rgba(57, 255, 20, 0.12) !important;
+    box-shadow: 0 0 25px rgba(57, 255, 20, 0.35) !important;
+  }
+  .pw-card.wrong {
+    border-color: var(--neon-red) !important;
+    background: rgba(255, 23, 68, 0.12) !important;
+    animation: shake 0.5s ease-out;
+  }
+  .pw-badge {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: rgba(0,240,255,0.1);
+    border: 1px solid rgba(0,240,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--neon-cyan);
+    flex-shrink: 0;
+  }
+  .pw-text {
+    font-family: 'Share Tech Mono', monospace; font-size: 1.08rem; color: #edf3fa; flex: 1; word-break: break-all;
+  }
+  .pw-indicator { font-size: 1.3rem; opacity: 0; }
+  .pw-card.correct .pw-indicator.ck { opacity: 1; }
+  .pw-card.wrong .pw-indicator.cr { opacity: 1; }
+
+  .pw-feedback-box {
+    min-height: 70px;
+  }
+  .pw-feedback {
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    display: none;
+    animation: slideInUp 0.3s ease-out;
+  }
+  .pw-feedback.show { display: block; }
+  .pw-feedback.success { background: rgba(57,255,20,0.1); border: 1px solid rgba(57,255,20,0.3); color: var(--neon-green); }
+  .pw-feedback.error { background: rgba(255,23,68,0.1); border: 1px solid rgba(255,23,68,0.3); color: var(--neon-red); }
+  .p-fe { font-size: 0.82rem; font-weight: 400; opacity: 0.9; margin-top: 6px; color: #b4c6db; }
+
+  .pw-next-btn {
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    color: #fff;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    margin: 0 auto;
+    display: none;
+    text-transform: uppercase;
+    box-shadow: 0 4px 18px rgba(0,240,255,0.3);
+    transition: all 0.25s;
+  }
+  .pw-next-btn.show { display: block; }
+  .pw-next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(0,240,255,0.5); }
+
+  .tip-banner {
+    margin-top: 24px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.06), rgba(255,215,0,0.02));
+    border: 1px solid rgba(255,215,0,0.18);
+    border-radius: 14px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .tip-hdr { font-family: 'Orbitron', sans-serif; font-size: 0.78rem; color: var(--gold); letter-spacing: 2px; margin-bottom: 4px; }
+  .tip-body { font-size: 0.92rem; color: #a4b8d4; line-height: 1.5; }
+
+  /* ═══════════════════════════════════════════════
+     MODALS
+     ═══════════════════════════════════════════════ */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(4, 8, 20, 0.85); backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.35s;
+  }
+  .modal-backdrop.show { opacity: 1; pointer-events: all; }
+  .modal-panel {
+    background: linear-gradient(145deg, #131c33, #0a1020);
+    border: 2px solid rgba(0, 240, 255, 0.25);
+    border-radius: 24px; padding: 36px 42px; text-align: center;
+    max-width: 480px; width: 92%;
+    transform: scale(0.85); transition: transform 0.35s;
+    box-shadow: 0 0 60px rgba(0,0,0,0.7);
+  }
+  .modal-backdrop.show .modal-panel { transform: scale(1); }
+  .m-icon { font-size: 4rem; margin-bottom: 10px; }
+  .m-title { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; margin-bottom: 8px; }
+  .m-title.win { color: var(--neon-green); text-shadow: 0 0 20px rgba(57,255,20,0.4); }
+  .m-title.lose { color: var(--neon-red); text-shadow: 0 0 20px rgba(255,23,68,0.4); }
+  .m-sub { color: #8298b8; font-size: 0.96rem; margin-bottom: 8px; line-height: 1.4; }
+  .m-stats { font-family: 'Share Tech Mono', monospace; font-size: 1.15rem; color: var(--gold); margin: 12px 0 22px; }
+  .m-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .m-btn {
+    font-family: 'Orbitron', sans-serif; font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 1.5px; padding: 12px 28px; border-radius: 12px;
+    border: none; cursor: pointer; transition: all 0.25s; text-transform: uppercase;
+  }
+  .m-btn.primary { background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan)); color: #040914; box-shadow: 0 4px 18px rgba(57,255,20,0.3); }
+  .m-btn.purple { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); color: #fff; box-shadow: 0 4px 18px rgba(0,240,255,0.3); }
+  .m-btn.retry { background: linear-gradient(135deg, var(--neon-red), var(--neon-orange)); color: #fff; box-shadow: 0 4px 18px rgba(255,23,68,0.3); }
+  .m-btn.secondary { background: transparent; border: 2px solid var(--neon-cyan); color: var(--neon-cyan); }
+  .m-btn:hover { transform: translateY(-2px); }
+
+  /* Responsive styles */
+  @media(max-width: 850px) {
+    :root { --cell-size: 46px; }
+    .v-arena { flex-direction: column; align-items: center; }
+    .tool-dock { flex-direction: row; width: 100%; max-width: 500px; flex-wrap: wrap; justify-content: center; }
+    .dock-title { width: 100%; }
+    .tool-item { flex: 1; min-width: 95px; }
+    .tool-desc-box { display: none; }
+    .top-navbar { flex-direction: column; align-items: stretch; }
+    .nav-tabs { justify-content: center; }
+  }
+  @media(max-width: 480px) {
+    :root { --cell-size: 36px; }
+    .m-cell { font-size: 1rem; border-radius: 6px; }
+    .grid-container { padding: 10px; }
+    .hub-main-title { font-size: 1.7rem; }
+    .hub-card { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-particles" id="bgParticles"></div>
+<div class="scanline"></div>
+<canvas id="confetti"></canvas>
+
+<!-- ═══════════════════════════════════════════════
+     STICKY TOP NAVIGATION BAR
+     ═══════════════════════════════════════════════ -->
+<header class="top-navbar">
+  <div class="nav-brand">
+    <div class="brand-icon">🛡️</div>
+    <div class="brand-text">
+      <h1>CYBER DEFENDER</h1>
+      <span>All-In-One Cyber Safety Academy</span>
+    </div>
+  </div>
+
+  <nav class="nav-tabs">
+    <button class="nav-tab active" id="tabHub" onclick="switchView('hub')">
+      <span>🏠</span> Hub
+    </button>
+    <button class="nav-tab" id="tabCampaign" onclick="startCampaign()">
+      <span>🚀</span> Campaign
+    </button>
+    <button class="nav-tab" id="tabVirus" onclick="switchView('virus')">
+      <span>🦠</span> Level 4: Virus Attack
+    </button>
+    <button class="nav-tab" id="tabPwd" onclick="switchView('pwd')">
+      <span>🔓</span> Level 7: Password Defense
+    </button>
+  </nav>
+
+  <div class="agent-status">
+    <div class="status-badge">
+      <span class="badge-label">Total Score</span>
+      <span class="badge-val score" id="globalScore">0</span>
+    </div>
+    <div class="status-badge">
+      <span class="badge-label">Rank</span>
+      <span class="badge-val rank" id="globalRank">ROOKIE</span>
+    </div>
+    <button class="audio-toggle-btn" id="audioToggle" onclick="toggleAudio()" title="Toggle Sound">🔊</button>
+  </div>
+</header>
+
+<main class="main-app">
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW 0: ALL-IN-ONE HUB / DASHBOARD
+       ═══════════════════════════════════════════════ -->
+  <section class="hub-view" id="viewHub">
+    <div class="hub-banner-pill">⚡ Interactive Cybersecurity Training ⚡</div>
+    <h2 class="hub-main-title">Master Cyber Defense</h2>
+    <p class="hub-desc">
+      Protect networks from aggressive malware outbreaks and learn how social engineering turns personal profiles into cracked passwords. Play both levels in one seamless platform!
+    </p>
+
+    <!-- Campaign Card -->
+    <div class="campaign-box">
+      <div class="campaign-info">
+        <div class="campaign-title">🌟 Play Full Campaign Mode</div>
+        <div class="campaign-sub">Play Level 4 (Virus Attack) & advance seamlessly into Level 7 (Password Defense) for the Grand Cyber Defender Trophy!</div>
+      </div>
+      <button class="campaign-start-btn" onclick="startCampaign()">Start Campaign ▶</button>
+    </div>
+
+    <!-- Direct Level Access Cards -->
+    <div class="hub-cards">
+      <div class="hub-card v-card" onclick="switchView('virus')">
+        <div class="hc-badge">TACTICAL SIMULATION</div>
+        <div class="hc-icon">🦠</div>
+        <div class="hc-title">LEVEL 4: Virus Attack</div>
+        <div class="hc-desc">
+          An 8×8 network grid with 64 interactive nodes is under infection! Strategically use Antivirus, Firewall barriers, 3-turn Freeze, and multi-node Cleaners to stop the spread.
+        </div>
+        <div class="hc-action">Play Level 4 ▶</div>
+      </div>
+
+      <div class="hub-card p-card" onclick="switchView('pwd')">
+        <div class="hc-badge">SOCIAL DEFENSE</div>
+        <div class="hc-icon">🔓</div>
+        <div class="hc-title">LEVEL 7: Password Defense</div>
+        <div class="hc-desc">
+          Inspect personal profiles (DOB, pet, phone, hobbies) to identify which passwords are vulnerable to social engineering. Master strong credentials!
+        </div>
+        <div class="hc-action">Play Level 7 ▶</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW 1: LEVEL 4 – VIRUS ATTACK
+       ═══════════════════════════════════════════════ -->
+  <section class="level-view hidden" id="viewVirus">
+    <div class="view-header">
+      <div class="view-pill v-pill" id="vLevelPill">⚡ LEVEL 4: STAGE 1 ⚡</div>
+      <h2 class="view-title">Virus Attack – Stop the Spread</h2>
+      <p class="view-sub">Select a defence tool, then click nodes on the 8×8 grid</p>
+    </div>
+
+    <!-- Stats Strip -->
+    <div class="v-stats-strip">
+      <div class="v-stat-box"><div class="v-stat-lbl">Stage</div><div class="v-stat-num lv" id="vsStage">1</div></div>
+      <div class="v-stat-box"><div class="v-stat-lbl">Turn</div><div class="v-stat-num trn" id="vsTurn">0</div></div>
+      <div class="v-stat-box"><div class="v-stat-lbl">Infected</div><div class="v-stat-num inf" id="vsInf">0</div></div>
+      <div class="v-stat-box"><div class="v-stat-lbl">Healthy</div><div class="v-stat-num hlth" id="vsHlth">64</div></div>
+      <div class="v-stat-box"><div class="v-stat-lbl">L4 Score</div><div class="v-stat-num scr" id="vsScore">0</div></div>
+    </div>
+
+    <!-- Arena Layout -->
+    <div class="v-arena">
+      <!-- Tool Dock -->
+      <div class="tool-dock">
+        <div class="dock-title">🛡️ Defence Arsenal</div>
+
+        <div class="tool-item av" data-tool="antivirus" onclick="vSelectTool('antivirus')">
+          <div class="ti-icon">💊</div>
+          <div class="ti-name">Antivirus</div>
+          <div class="ti-count" id="vtAV">15</div>
+        </div>
+
+        <div class="tool-item fw" data-tool="firewall" onclick="vSelectTool('firewall')">
+          <div class="ti-icon">🛡️</div>
+          <div class="ti-name">Firewall</div>
+          <div class="ti-count" id="vtFW">8</div>
+        </div>
+
+        <div class="tool-item fr" data-tool="freeze" onclick="vSelectTool('freeze')">
+          <div class="ti-icon">🧊</div>
+          <div class="ti-name">Freeze (3 Turns)</div>
+          <div class="ti-count" id="vtFR">5</div>
+        </div>
+
+        <div class="tool-item cl" data-tool="cleaner" onclick="vSelectTool('cleaner')">
+          <div class="ti-icon">🧹</div>
+          <div class="ti-name">Area Cleaner</div>
+          <div class="ti-count" id="vtCL">3</div>
+        </div>
+
+        <div class="tool-desc-box" id="toolDescBox">Select a tool above, then click a cell on the grid.</div>
+      </div>
+
+      <!-- 8x8 Grid Arena -->
+      <div>
+        <div class="grid-container">
+          <div class="matrix-grid" id="matrixGrid"></div>
+        </div>
+
+        <!-- Legend and Sub-level Selector -->
+        <div class="grid-bottom-bar">
+          <div class="matrix-legend">
+            <div class="leg-item"><div class="leg-box h"></div>Healthy</div>
+            <div class="leg-item"><div class="leg-box i"></div>Infected</div>
+            <div class="leg-item"><div class="leg-box fv"></div>Fast Virus</div>
+            <div class="leg-item"><div class="leg-box fw"></div>Firewall</div>
+            <div class="leg-item"><div class="leg-box fz"></div>Frozen</div>
+          </div>
+
+          <div class="stage-pills" id="stagePills"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW 2: LEVEL 7 – PASSWORD GUESSING GAME
+       ═══════════════════════════════════════════════ -->
+  <section class="level-view hidden" id="viewPwd">
+    <div class="view-header">
+      <div class="view-pill p-pill">⚡ LEVEL 7: SOCIAL DEFENSE ⚡</div>
+      <h2 class="view-title">Password Guessing Game</h2>
+      <p class="view-sub">Analyze the fictional profile below: which password is most vulnerable?</p>
+    </div>
+
+    <!-- Password Stats Strip -->
+    <div class="p-stats-strip">
+      <div class="p-stat-box">
+        <div class="p-stat-lbl">L7 Score</div>
+        <div class="p-stat-val score" id="psScore">0</div>
+      </div>
+      <div class="p-stat-box">
+        <div class="p-stat-lbl">Round</div>
+        <div class="p-stat-val" id="psRound">1</div>
+      </div>
+      <div class="p-stat-box">
+        <div class="p-stat-lbl">Streak</div>
+        <div class="p-stat-val streak" id="psStreak">0 🔥</div>
+        <div class="streak-bar"><div class="streak-fill" id="psStreakFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- Main Password Arena -->
+    <div class="p-arena">
+      <!-- Profile Column -->
+      <div class="profile-panel" id="pProfileCard">
+        <div class="prof-hdr">
+          <span>🗂️</span><span>Target Personal Profile</span>
+        </div>
+        <div class="avatar-block">
+          <div class="avatar-circle" id="pAvatar">👤</div>
+          <div class="avatar-name" id="pName">Loading Profile...</div>
+        </div>
+        <div class="profile-fields" id="pProfileFields"></div>
+      </div>
+
+      <!-- Password Options Column -->
+      <div class="password-panel">
+        <div class="prompt-card">
+          <div class="prompt-title">🎯 Which password is easiest to guess?</div>
+          <div class="prompt-sub">Look for personal info patterns (name, birthday, phone, favorite pet)</div>
+        </div>
+
+        <div class="pw-options-list" id="pwOptionsList"></div>
+
+        <div class="pw-feedback-box">
+          <div class="pw-feedback" id="pwFeedback"></div>
+        </div>
+
+        <button class="pw-next-btn" id="pwNextBtn" onclick="pNextRound()">Next Round ▶</button>
+      </div>
+    </div>
+
+    <!-- Cyber Safety Tip Banner -->
+    <div class="tip-banner">
+      <div class="tip-hdr">🛡️ Cyber Safety Insight</div>
+      <div class="tip-body" id="pwTipText">Never use your <strong>name</strong>, <strong>birthday</strong>, <strong>phone number</strong>, or <strong>favourite pet</strong> in passwords. Attackers crawl social media to guess these first!</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════
+     COMMON MODALS
+     ═══════════════════════════════════════════════ -->
+<!-- Level 4 Win Modal -->
+<div class="modal-backdrop" id="modalVWin">
+  <div class="modal-panel">
+    <div class="m-icon">🏆</div>
+    <div class="m-title win">SYSTEM SECURED!</div>
+    <div class="m-sub" id="vWinMsg">All viruses were eradicated from the network.</div>
+    <div class="m-stats" id="vWinScore"></div>
+    <div class="m-actions">
+      <button class="m-btn purple" id="vWinCampaignNext" onclick="onCampaignProceedToL7()">Proceed to Level 7 ▶</button>
+      <button class="m-btn primary" id="vWinNextStage" onclick="vNextStage()">Next Stage ▶</button>
+      <button class="m-btn secondary" onclick="closeModals()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Level 4 Lose Modal -->
+<div class="modal-backdrop" id="modalVLose">
+  <div class="modal-panel">
+    <div class="m-icon">💀</div>
+    <div class="m-title lose">NETWORK COMPROMISED!</div>
+    <div class="m-sub">The virus overtook the remaining nodes before containment.</div>
+    <div class="m-stats" id="vLoseScore"></div>
+    <div class="m-actions">
+      <button class="m-btn retry" onclick="vRestartCurrentStage()">Retry Stage 🔄</button>
+      <button class="m-btn secondary" onclick="closeModals()">Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- Grand Campaign Victory Modal -->
+<div class="modal-backdrop" id="modalGrandTrophy">
+  <div class="modal-panel">
+    <div class="m-icon">🎖️</div>
+    <div class="m-title win">GRAND DEFENDER!</div>
+    <div class="m-sub">Outstanding performance! You successfully defended the network in Level 4 and mastered social password defense in Level 7!</div>
+    <div class="m-stats" id="grandScoreDisplay"></div>
+    <div class="m-actions">
+      <button class="m-btn primary" onclick="startCampaign()">Replay Campaign 🚀</button>
+      <button class="m-btn secondary" onclick="switchView('hub'); closeModals();">Return to Hub</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT LOGIC
+     ═══════════════════════════════════════════════ -->
+<script>
+// ── Helper functions ──
+const $ = id => document.getElementById(id);
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = arr => {
+  const b = [...arr];
+  for (let i = b.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+};
+const wait = ms => new Promise(res => setTimeout(res, ms));
+
+// ── Global Sound Effects (Web Audio API) ──
+let soundEnabled = true;
+const SFX = (() => {
+  let ctx = null;
+  function getCtx() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+  function tone(f, dur, type='sine', vol=0.15, ramp=true) {
+    if (!soundEnabled) return;
+    try {
+      const c = getCtx();
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.type = type;
+      o.frequency.value = f;
+      g.gain.value = vol;
+      if (ramp) g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+      o.connect(g).connect(c.destination);
+      o.start();
+      o.stop(c.currentTime + dur);
+    } catch(e) {}
+  }
+  function noise(dur, vol=0.07) {
+    if (!soundEnabled) return;
+    try {
+      const c = getCtx();
+      const bs = c.sampleRate * dur;
+      const buf = c.createBuffer(1, bs, c.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bs; i++) data[i] = Math.random() * 2 - 1;
+      const s = c.createBufferSource();
+      const g = c.createGain();
+      s.buffer = buf;
+      g.gain.value = vol;
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+      s.connect(g).connect(c.destination);
+      s.start();
+    } catch(e) {}
+  }
+  return {
+    click() { tone(800, 0.08, 'sine', 0.1); },
+    cure() { tone(880, 0.12, 'sine', 0.12); setTimeout(() => tone(1320, 0.15, 'sine', 0.1), 80); },
+    firewall() { tone(440, 0.1, 'triangle', 0.1); tone(660, 0.1, 'triangle', 0.08); },
+    freeze() { tone(1600, 0.22, 'sine', 0.08); tone(2400, 0.18, 'sine', 0.06); },
+    cleaner() { tone(660, 0.08, 'sine', 0.1); setTimeout(() => tone(990, 0.08, 'sine', 0.1), 60); setTimeout(() => tone(1320, 0.12, 'sine', 0.08), 120); },
+    spread() { tone(160, 0.25, 'sawtooth', 0.04); },
+    win() { [0, 120, 240, 360, 480].forEach((d, i) => setTimeout(() => tone(440 * (1 + i * 0.2), 0.3, 'sine', 0.12), d)); },
+    lose() { [0, 200, 400].forEach((d, i) => setTimeout(() => tone(300 - i * 60, 0.45, 'sawtooth', 0.08), d)); },
+    correct() { tone(523, 0.12, 'sine', 0.12); setTimeout(() => tone(659, 0.12, 'sine', 0.1), 90); setTimeout(() => tone(784, 0.2, 'sine', 0.1), 180); },
+    wrong() { tone(200, 0.3, 'sawtooth', 0.08); }
+  };
+})();
+
+function toggleAudio() {
+  soundEnabled = !soundEnabled;
+  $('audioToggle').textContent = soundEnabled ? '🔊' : '🔇';
+}
+
+// ── Confetti System ──
+function launchConfetti() {
+  const canvas = $('confetti');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const colors = ['#39ff14','#00f0ff','#ff2d95','#b026ff','#ffd700','#ff9100','#00b0ff'];
+  const particles = Array.from({length: 120}, () => ({
+    x: window.innerWidth / 2 + (Math.random() - 0.5) * 400,
+    y: window.innerHeight / 2,
+    vx: (Math.random() - 0.5) * 14,
+    vy: -Math.random() * 14 - 3,
+    color: pick(colors),
+    size: 3 + Math.random() * 5,
+    rot: Math.random() * 360,
+    rv: (Math.random() - 0.5) * 12,
+    life: 1
+  }));
+  function frame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      if (p.life <= 0) return;
+      alive = true;
+      p.x += p.vx; p.y += p.vy; p.vy += 0.22; p.rot += p.rv; p.life -= 0.012;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.globalAlpha = p.life;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.restore();
+    });
+    if (alive) requestAnimationFrame(frame);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  frame();
+}
+
+// ── Background Floating Particles ──
+(function initBg() {
+  const el = $('bgParticles');
+  for (let i = 0; i < 28; i++) {
+    const d = document.createElement('div');
+    d.className = 'p';
+    d.style.left = Math.random() * 100 + '%';
+    d.style.width = d.style.height = (2 + Math.random() * 3) + 'px';
+    d.style.background = pick(['var(--neon-green)', 'var(--neon-cyan)', 'var(--neon-pink)', 'var(--neon-purple)']);
+    d.style.animationDuration = (7 + Math.random() * 12) + 's';
+    d.style.animationDelay = (Math.random() * 10) + 's';
+    el.appendChild(d);
+  }
+})();
+
+// ── Global Stats & Rank Tracker ──
+let globalTotalScore = 0;
+let isCampaignMode = false;
+
+function addGlobalScore(pts) {
+  globalTotalScore += pts;
+  $('globalScore').textContent = globalTotalScore;
+  let rank = 'ROOKIE';
+  if (globalTotalScore >= 200) rank = 'MASTER GUARDIAN';
+  else if (globalTotalScore >= 120) rank = 'DEFENDER CYBER';
+  else if (globalTotalScore >= 60) rank = 'SPECIALIST';
+  else if (globalTotalScore >= 30) rank = 'PROTECTOR';
+  $('globalRank').textContent = rank;
+}
+
+// ── View Switching & Routing ──
+function switchView(viewName) {
+  $('viewHub').classList.add('hidden');
+  $('viewVirus').classList.add('hidden');
+  $('viewPwd').classList.add('hidden');
+
+  ['tabHub', 'tabCampaign', 'tabVirus', 'tabPwd'].forEach(id => $(id).classList.remove('active'));
+
+  if (viewName === 'hub') {
+    $('viewHub').classList.remove('hidden');
+    $('tabHub').classList.add('active');
+    isCampaignMode = false;
+  } else if (viewName === 'virus') {
+    $('viewVirus').classList.remove('hidden');
+    $('tabVirus').classList.add('active');
+    if (!vStarted) vStartStage(vCurrentStage);
+  } else if (viewName === 'pwd') {
+    $('viewPwd').classList.remove('hidden');
+    $('tabPwd').classList.add('active');
+    if (!pStarted) pStartRound();
+  }
+}
+
+function startCampaign() {
+  closeModals();
+  isCampaignMode = true;
+  $('tabCampaign').classList.add('active');
+  $('tabHub').classList.remove('active');
+  $('tabVirus').classList.remove('active');
+  $('tabPwd').classList.remove('active');
+
+  $('viewHub').classList.add('hidden');
+  $('viewPwd').classList.add('hidden');
+  $('viewVirus').classList.remove('hidden');
+
+  vStartStage(0);
+}
+
+function closeModals() {
+  $('modalVWin').classList.remove('show');
+  $('modalVLose').classList.remove('show');
+  $('modalGrandTrophy').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════
+//  LEVEL 4: VIRUS ATTACK ENGINE
+// ═══════════════════════════════════════════════
+const STAGES = [
+  { name: 'Stage 1: Rookie Outbreak', viruses: 2, spreadChance: 0.22, fastVirus: false, tools: { antivirus: 15, firewall: 8, freeze: 5, cleaner: 3 } },
+  { name: 'Stage 2: Double Infiltration', viruses: 3, spreadChance: 0.28, fastVirus: false, tools: { antivirus: 13, firewall: 7, freeze: 4, cleaner: 3 } },
+  { name: 'Stage 3: Rapid Spread', viruses: 3, spreadChance: 0.38, fastVirus: false, tools: { antivirus: 11, firewall: 6, freeze: 4, cleaner: 2 } },
+  { name: 'Stage 4: Mutation Attack', viruses: 4, spreadChance: 0.32, fastVirus: true, fastSpreadChance: 0.52, tools: { antivirus: 10, firewall: 5, freeze: 3, cleaner: 2 } },
+  { name: 'Stage 5: Network Siege', viruses: 5, spreadChance: 0.42, fastVirus: true, fastSpreadChance: 0.58, tools: { antivirus: 8, firewall: 4, freeze: 3, cleaner: 2 } }
+];
+
+const V_TOOL_HINTS = {
+  antivirus: '💊 <b>Antivirus</b> – Click an <b style="color:var(--neon-red)">infected</b> node to eliminate the virus.',
+  firewall: '🛡️ <b>Firewall</b> – Click a <b style="color:var(--neon-green)">healthy</b> node to protect it permanently.',
+  freeze: '🧊 <b>Freeze</b> – Click an <b style="color:var(--neon-red)">infected</b> node to freeze it for 3 turns.',
+  cleaner: '🧹 <b>Area Cleaner</b> – Click an <b style="color:var(--neon-red)">infected</b> node to clean it AND all orthogonal neighbours!'
+};
+
+const CELL_STATE = { HEALTHY: 0, INFECTED: 1, FIREWALL: 2, FROZEN: 3 };
+const ROWS = 8, COLS = 8;
+
+let vGrid = [];
+let vCurrentStage = 0;
+let vUnlockedStage = +(localStorage.getItem('va_stage_unlock') || 1);
+let vSelectedTool = null;
+let vTools = {};
+let vTurn = 0;
+let vScore = 0;
+let vProcessing = false;
+let vGameOver = false;
+let vStarted = false;
+
+function vAdj(r, c) {
+  const n = [];
+  if (r > 0) n.push([r - 1, c]);
+  if (r < ROWS - 1) n.push([r + 1, c]);
+  if (c > 0) n.push([r, c - 1]);
+  if (c < COLS - 1) n.push([r, c + 1]);
+  return n;
+}
+
+function vRenderStagePills() {
+  const container = $('stagePills');
+  container.innerHTML = '';
+  STAGES.forEach((stg, i) => {
+    const locked = i + 1 > vUnlockedStage;
+    const btn = document.createElement('button');
+    btn.className = 'stage-btn' + (locked ? ' locked' : '') + (i === vCurrentStage ? ' active' : '');
+    btn.textContent = locked ? `🔒 S${i+1}` : `S${i+1}`;
+    btn.title = stg.name;
+    if (!locked) btn.onclick = () => vStartStage(i);
+    container.appendChild(btn);
+  });
+}
+
+function vStartStage(stageIdx) {
+  closeModals();
+  vStarted = true;
+  vCurrentStage = stageIdx;
+  const cfg = STAGES[stageIdx];
+
+  vTurn = 0;
+  vScore = 0;
+  vGameOver = false;
+  vProcessing = false;
+  vSelectedTool = null;
+  vTools = { ...cfg.tools };
+
+  // Initialize empty grid
+  vGrid = [];
+  for (let r = 0; r < ROWS; r++) {
+    vGrid[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      vGrid[r][c] = { state: CELL_STATE.HEALTHY, freezeCounter: 0, fast: false };
+    }
+  }
+
+  // Randomize initial viruses
+  const allCells = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) allCells.push([r, c]);
+  const shuffledCells = shuffle(allCells);
+  for (let i = 0; i < cfg.viruses; i++) {
+    const [r, c] = shuffledCells[i];
+    vGrid[r][c].state = CELL_STATE.INFECTED;
+    if (cfg.fastVirus && i % 2 === 0) vGrid[r][c].fast = true;
+  }
+
+  $('vLevelPill').textContent = `⚡ LEVEL 4: STAGE ${stageIdx + 1} ⚡`;
+  $('vsStage').textContent = stageIdx + 1;
+
+  vRenderStagePills();
+  vRenderGrid();
+  vUpdateToolUI();
+  vUpdateStats();
+}
+
+function vRenderGrid() {
+  const el = $('matrixGrid');
+  el.innerHTML = '';
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'm-cell ' + vGetCellClass(r, c);
+      cell.id = `mc_${r}_${c}`;
+      cell.innerHTML = vGetCellHTML(r, c);
+      cell.addEventListener('click', () => vCellClick(r, c));
+      el.appendChild(cell);
+    }
+  }
+}
+
+function vGetCellClass(r, c) {
+  const g = vGrid[r][c];
+  switch (g.state) {
+    case CELL_STATE.HEALTHY: return 'healthy';
+    case CELL_STATE.INFECTED: return 'infected' + (g.fast ? ' fast-virus' : '');
+    case CELL_STATE.FIREWALL: return 'firewall';
+    case CELL_STATE.FROZEN: return 'frozen';
+  }
+}
+
+function vGetCellHTML(r, c) {
+  const g = vGrid[r][c];
+  switch (g.state) {
+    case CELL_STATE.HEALTHY: return '💻';
+    case CELL_STATE.INFECTED: return g.fast ? '🔥' : '🦠';
+    case CELL_STATE.FIREWALL: return '🛡️';
+    case CELL_STATE.FROZEN: return `❄️<span class="freeze-num">${g.freezeCounter}</span>`;
+  }
+}
+
+function vUpdateCellNode(r, c, animClass='') {
+  const el = $(`mc_${r}_${c}`);
+  if (!el) return;
+  el.className = 'm-cell ' + vGetCellClass(r, c) + (animClass ? ' ' + animClass : '');
+  el.innerHTML = vGetCellHTML(r, c);
+}
+
+function vCountState(st) {
+  let cnt = 0;
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (vGrid[r][c].state === st) cnt++;
+  return cnt;
+}
+
+function vUpdateStats() {
+  $('vsTurn').textContent = vTurn;
+  const infectedCount = vCountState(CELL_STATE.INFECTED) + vCountState(CELL_STATE.FROZEN);
+  const healthyCount = vCountState(CELL_STATE.HEALTHY) + vCountState(CELL_STATE.FIREWALL);
+  $('vsInf').textContent = infectedCount;
+  $('vsHlth').textContent = healthyCount;
+  $('vsScore').textContent = vScore;
+}
+
+function vUpdateToolUI() {
+  $('vtAV').textContent = vTools.antivirus;
+  $('vtFW').textContent = vTools.firewall;
+  $('vtFR').textContent = vTools.freeze;
+  $('vtCL').textContent = vTools.cleaner;
+
+  document.querySelectorAll('.tool-item').forEach(btn => {
+    const t = btn.dataset.tool;
+    btn.classList.toggle('depleted', vTools[t] <= 0);
+    btn.classList.toggle('selected', t === vSelectedTool);
+  });
+
+  $('toolDescBox').innerHTML = vSelectedTool ? V_TOOL_HINTS[vSelectedTool] : 'Select a tool above, then click a cell on the grid.';
+}
+
+function vSelectTool(toolKey) {
+  if (vProcessing || vGameOver) return;
+  SFX.click();
+  vSelectedTool = vSelectedTool === toolKey ? null : toolKey;
+  vUpdateToolUI();
+}
+
+async function vCellClick(r, c) {
+  if (vProcessing || vGameOver || !vSelectedTool) return;
+  const cell = vGrid[r][c];
+  let valid = false;
+
+  switch (vSelectedTool) {
+    case 'antivirus':
+      if (cell.state === CELL_STATE.INFECTED && vTools.antivirus > 0) {
+        vTools.antivirus--;
+        cell.state = CELL_STATE.HEALTHY;
+        cell.fast = false;
+        vUpdateCellNode(r, c, 'flash-clean');
+        SFX.cure();
+        vScore += 10;
+        addGlobalScore(10);
+        valid = true;
+      }
+      break;
+    case 'firewall':
+      if (cell.state === CELL_STATE.HEALTHY && vTools.firewall > 0) {
+        vTools.firewall--;
+        cell.state = CELL_STATE.FIREWALL;
+        vUpdateCellNode(r, c);
+        SFX.firewall();
+        vScore += 5;
+        addGlobalScore(5);
+        valid = true;
+      }
+      break;
+    case 'freeze':
+      if (cell.state === CELL_STATE.INFECTED && vTools.freeze > 0) {
+        vTools.freeze--;
+        cell.state = CELL_STATE.FROZEN;
+        cell.freezeCounter = 3;
+        vUpdateCellNode(r, c);
+        SFX.freeze();
+        vScore += 5;
+        addGlobalScore(5);
+        valid = true;
+      }
+      break;
+    case 'cleaner':
+      if (cell.state === CELL_STATE.INFECTED && vTools.cleaner > 0) {
+        vTools.cleaner--;
+        const cleanedNodes = [[r, c]];
+        cell.state = CELL_STATE.HEALTHY;
+        cell.fast = false;
+        vAdj(r, c).forEach(([nr, nc]) => {
+          if (vGrid[nr][nc].state === CELL_STATE.INFECTED) {
+            vGrid[nr][nc].state = CELL_STATE.HEALTHY;
+            vGrid[nr][nc].fast = false;
+            cleanedNodes.push([nr, nc]);
+          }
+        });
+        cleanedNodes.forEach(([cr, cc]) => vUpdateCellNode(cr, cc, 'flash-clean'));
+        SFX.cleaner();
+        const earned = cleanedNodes.length * 10;
+        vScore += earned;
+        addGlobalScore(earned);
+        valid = true;
+      }
+      break;
+  }
+
+  if (!valid) return;
+
+  vTurn++;
+  vUpdateToolUI();
+  vUpdateStats();
+
+  if (vCheckVictory()) return;
+
+  // Spread virus
+  vProcessing = true;
+  await vSimulateSpread();
+  vProcessing = false;
+
+  vTickFreezes();
+  vUpdateStats();
+  vCheckLoss();
+}
+
+async function vSimulateSpread() {
+  const cfg = STAGES[vCurrentStage];
+  const newInfections = [];
+
+  const infectedList = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (vGrid[r][c].state === CELL_STATE.INFECTED) {
+        infectedList.push([r, c, vGrid[r][c].fast]);
+      }
+    }
+  }
+
+  infectedList.forEach(([r, c, fast]) => {
+    const neighbors = shuffle(vAdj(r, c));
+    const chance = fast ? (cfg.fastSpreadChance || cfg.spreadChance) : cfg.spreadChance;
+    neighbors.forEach(([nr, nc]) => {
+      if (vGrid[nr][nc].state === CELL_STATE.HEALTHY && Math.random() < chance) {
+        if (!newInfections.some(x => x[0] === nr && x[1] === nc)) {
+          newInfections.push([nr, nc, fast && Math.random() < 0.4]);
+        }
+      }
+    });
+  });
+
+  for (const [nr, nc, fast] of newInfections) {
+    if (vGrid[nr][nc].state !== CELL_STATE.HEALTHY) continue;
+    vGrid[nr][nc].state = CELL_STATE.INFECTED;
+    vGrid[nr][nc].fast = fast;
+    vUpdateCellNode(nr, nc, 'flash-infect');
+    SFX.spread();
+    await wait(75);
+  }
+}
+
+function vTickFreezes() {
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = vGrid[r][c];
+      if (cell.state === CELL_STATE.FROZEN) {
+        cell.freezeCounter--;
+        if (cell.freezeCounter <= 0) {
+          cell.state = CELL_STATE.INFECTED;
+          cell.freezeCounter = 0;
+        }
+        vUpdateCellNode(r, c);
+      }
+    }
+  }
+}
+
+function vCheckVictory() {
+  const inf = vCountState(CELL_STATE.INFECTED);
+  const frz = vCountState(CELL_STATE.FROZEN);
+  if (inf === 0 && frz === 0) {
+    vGameOver = true;
+    if (vCurrentStage + 2 > vUnlockedStage) {
+      vUnlockedStage = Math.min(vCurrentStage + 2, STAGES.length);
+      localStorage.setItem('va_stage_unlock', vUnlockedStage);
+    }
+    setTimeout(() => {
+      SFX.win();
+      launchConfetti();
+      $('vWinScore').textContent = `Stage Score: ${vScore}  ·  Turns: ${vTurn}  ·  Total Points: ${globalTotalScore}`;
+
+      if (isCampaignMode) {
+        $('vWinCampaignNext').style.display = 'inline-block';
+        $('vWinNextStage').style.display = 'none';
+        $('vWinMsg').innerHTML = 'Stage cleared! As part of Campaign Mode, proceed to <b>Level 7: Password Defense</b>!';
+      } else {
+        $('vWinCampaignNext').style.display = 'none';
+        $('vWinNextStage').style.display = (vCurrentStage + 1 < STAGES.length) ? 'inline-block' : 'none';
+        $('vWinMsg').textContent = 'All viruses were eradicated from the network.';
+      }
+      $('modalVWin').classList.add('show');
+    }, 300);
+    return true;
+  }
+  return false;
+}
+
+function vNextStage() {
+  if (vCurrentStage + 1 < STAGES.length) {
+    vStartStage(vCurrentStage + 1);
+  } else {
+    closeModals();
+    switchView('hub');
+  }
+}
+
+function vRestartCurrentStage() {
+  vStartStage(vCurrentStage);
+}
+
+function onCampaignProceedToL7() {
+  closeModals();
+  switchView('pwd');
+  pStartRound();
+}
+
+function vCheckLoss() {
+  let hasDefense = false;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (vGrid[r][c].state === CELL_STATE.HEALTHY || vGrid[r][c].state === CELL_STATE.FIREWALL) {
+        hasDefense = true;
+        break;
+      }
+    }
+  }
+  const noTools = vTools.antivirus === 0 && vTools.firewall === 0 && vTools.freeze === 0 && vTools.cleaner === 0;
+  const activeInfections = vCountState(CELL_STATE.INFECTED) + vCountState(CELL_STATE.FROZEN);
+
+  if (!hasDefense || (noTools && activeInfections > 0 && vCountState(CELL_STATE.HEALTHY) === 0)) {
+    vGameOver = true;
+    setTimeout(() => {
+      SFX.lose();
+      $('vLoseScore').textContent = `Stage Score: ${vScore}  ·  Turns: ${vTurn}`;
+      $('modalVLose').classList.add('show');
+    }, 350);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  LEVEL 7: PASSWORD DEFENSE ENGINE
+// ═══════════════════════════════════════════════
+const P_NAMES = [
+  { name: "Rahul", avatar: "👦" }, { name: "Priya", avatar: "👧" }, { name: "Arjun", avatar: "🧑" },
+  { name: "Sneha", avatar: "👩" }, { name: "Kiran", avatar: "👦🏽" }, { name: "Ananya", avatar: "👧🏽" },
+  { name: "Vikram", avatar: "🧑🏻" }, { name: "Meera", avatar: "👩🏻" }, { name: "Rohit", avatar: "👨" },
+  { name: "Divya", avatar: "👩🏽" }, { name: "Aditya", avatar: "🧑🏾" }, { name: "Kavya", avatar: "👧🏻" },
+  { name: "Sanjay", avatar: "👨🏽" }, { name: "Nisha", avatar: "👩🏾" }, { name: "Amit", avatar: "🧔" },
+  { name: "Pooja", avatar: "👱‍♀️" }
+];
+const P_ANIMALS = [
+  { name: "Cat", emoji: "🐱" }, { name: "Dog", emoji: "🐶" }, { name: "Rabbit", emoji: "🐰" },
+  { name: "Tiger", emoji: "🐯" }, { name: "Panda", emoji: "🐼" }, { name: "Dolphin", emoji: "🐬" },
+  { name: "Elephant", emoji: "🐘" }, { name: "Unicorn", emoji: "🦄" }, { name: "Parrot", emoji: "🦜" },
+  { name: "Penguin", emoji: "🐧" }, { name: "Lion", emoji: "🦁" }
+];
+const P_COLORS = [
+  { name: "Blue", emoji: "💙" }, { name: "Red", emoji: "❤️" }, { name: "Green", emoji: "💚" },
+  { name: "Purple", emoji: "💜" }, { name: "Pink", emoji: "💖" }, { name: "Yellow", emoji: "💛" },
+  { name: "Orange", emoji: "🧡" }
+];
+const P_HOBBIES = ["Cricket 🏏", "Football ⚽", "Drawing 🎨", "Music 🎵", "Reading 📚", "Dancing 💃", "Gaming 🎮", "Cooking 🍳", "Photography 📷", "Swimming 🏊", "Chess ♟️"];
+const P_DECOY_EMOJIS = ["🏠", "🌟", "🔥", "⚡", "🎯", "💫", "🚀", "🎮", "✨", "🌈", "💎", "🎲"];
+const P_DECOY_NAMES = ["Aman", "Sara", "Ravi", "Zara", "Kabir", "Tanya", "Dev", "Isha", "Nikhil", "Riya", "Harsh", "Sana"];
+const P_DECOY_ANIMALS = ["Fox", "Wolf", "Bear", "Eagle", "Shark", "Horse", "Monkey", "Owl", "Frog", "Snake"];
+const P_TIPS = [
+  "Never use your <strong>name</strong>, <strong>birthday</strong>, <strong>phone number</strong>, or <strong>favourite pet</strong> in passwords. Attackers crawl social media to guess these first!",
+  "A strong password uses a <strong>mix of uppercase, lowercase, numbers, and symbols</strong> — completely detached from your personal identity.",
+  "Attackers use <strong>social engineering</strong> to harvest public details from Instagram, Facebook, and LinkedIn to build targeted password dictionaries.",
+  "Your <strong>pet's name</strong> or <strong>birth year</strong> are among the top 10 most cracked password formats globally.",
+  "Adding digits to your name like <strong>Rahul123</strong> does not protect you. Automated dictionary tools check these in microseconds!",
+  "Use a reputable <strong>password manager</strong> so you only need to memorize one master passphrase while generating 16+ character random passwords for every service.",
+  "Enable <strong>Two-Factor Authentication (2FA)</strong>. Even if someone guesses your password from your profile, 2FA prevents unauthorized logins!"
+];
+
+let pScore = 0;
+let pRound = 1;
+let pStreak = 0;
+let pAnswered = false;
+let pCorrectIndex = -1;
+let pExplanation = '';
+let pUsedNames = [];
+let pStarted = false;
+
+function pGenPhone() {
+  const prefixes = ["9876", "8765", "7890", "9988", "9012", "8899", "7654"];
+  return pick(prefixes) + String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function pGenDOB() {
+  const d = String(Math.floor(1 + Math.random() * 28)).padStart(2, '0');
+  const m = String(Math.floor(1 + Math.random() * 12)).padStart(2, '0');
+  const y = 2000 + Math.floor(Math.random() * 12);
+  return { formatted: `${d}/${m}/${y}`, day: d, month: m, year: String(y) };
+}
+
+function pGenEmail(name) {
+  const domains = ["gmail.com", "yahoo.com", "outlook.com"];
+  const suffix = Math.random() > 0.5 ? Math.floor(Math.random() * 99) : '';
+  return `${name.toLowerCase()}${suffix}@${pick(domains)}`;
+}
+
+function pGenerateProfile() {
+  let p;
+  do { p = pick(P_NAMES); } while (pUsedNames.includes(p.name) && pUsedNames.length < P_NAMES.length);
+  pUsedNames.push(p.name);
+  if (pUsedNames.length >= P_NAMES.length) pUsedNames = [];
+
+  return {
+    person: p,
+    animal: pick(P_ANIMALS),
+    color: pick(P_COLORS),
+    hobby: pick(P_HOBBIES),
+    phone: pGenPhone(),
+    dob: pGenDOB(),
+    email: pGenEmail(p.name)
+  };
+}
+
+function pGeneratePasswords(prof) {
+  const { person, animal, color, phone, dob } = prof;
+  const patterns = [
+    () => `${person.name}${animal.name}${pick(P_DECOY_EMOJIS)}`,
+    () => `${person.name}${dob.year}${animal.emoji}`,
+    () => `${person.name.toLowerCase()}${dob.day}${dob.month}`,
+    () => `${phone.slice(0, 4)}${person.name}`,
+    () => `${person.name}${phone.slice(-4)}`,
+    () => `${animal.name}${person.name}${dob.year}`,
+    () => `${person.name}@${dob.day}${dob.month}${dob.year.slice(-2)}`,
+    () => `${color.name}${person.name}${dob.year}`,
+    () => `${person.name}${animal.name}${dob.day}`,
+    () => `${phone}${dob.day}${dob.month}`
+  ];
+  const explanations = [
+    `It directly uses the person's <strong>name</strong> and <strong>favourite pet (${animal.name})</strong>!`,
+    `It exposes their <strong>name</strong>, <strong>birth year (${dob.year})</strong>, and <strong>pet emoji</strong>!`,
+    `It combines their <strong>name</strong> with their exact <strong>birth day and month (${dob.day}/${dob.month})</strong>!`,
+    `It connects their <strong>phone number prefix</strong> with their <strong>name</strong>!`,
+    `It links the person's <strong>name</strong> to the last 4 digits of their <strong>phone number</strong>!`,
+    `It joins their <strong>favorite animal</strong>, <strong>name</strong>, and <strong>birth year</strong>!`,
+    `It's their <strong>name</strong> combined with their <strong>birthday</strong>!`,
+    `It uses their <strong>favorite color</strong>, <strong>name</strong>, and <strong>birth year</strong>!`,
+    `It combines their <strong>name</strong>, <strong>animal</strong>, and <strong>birth day</strong>!`,
+    `It merges their <strong>full phone number</strong> and <strong>birthday</strong>!`
+  ];
+
+  const pIdx = Math.floor(Math.random() * patterns.length);
+  const weakPassword = patterns[pIdx]();
+  pExplanation = explanations[pIdx];
+
+  const decoys = [];
+  const used = new Set();
+  const decoyGens = [
+    () => `${pick(P_DECOY_NAMES)}${pick(P_DECOY_ANIMALS)}${pick(P_DECOY_EMOJIS)}`,
+    () => `${pick(P_DECOY_NAMES)}${pick(P_DECOY_ANIMALS)}${2000 + Math.floor(Math.random() * 12)}`,
+    () => `${pick(P_DECOY_NAMES)}@${String(Math.floor(10 + Math.random() * 20))}${String(Math.floor(1 + Math.random() * 12)).padStart(2, '0')}`,
+    () => `${pick(P_DECOY_NAMES)}${Math.floor(1000 + Math.random() * 9000)}${pick(P_DECOY_EMOJIS)}`,
+    () => `${pick(P_DECOY_ANIMALS)}${pick(P_DECOY_NAMES)}${Math.floor(100 + Math.random() * 900)}`
+  ];
+
+  while (decoys.length < 3) {
+    const pw = pick(decoyGens)();
+    if (!used.has(pw) && pw !== weakPassword) {
+      used.add(pw);
+      decoys.push(pw);
+    }
+  }
+
+  const options = [
+    { password: weakPassword, isCorrect: true },
+    ...decoys.map(d => ({ password: d, isCorrect: false }))
+  ];
+  const shuffled = shuffle(options);
+  pCorrectIndex = shuffled.findIndex(o => o.isCorrect);
+  return shuffled;
+}
+
+function pRenderProfile(prof) {
+  const { person, animal, color, hobby, phone, dob, email } = prof;
+  $('pAvatar').textContent = person.avatar;
+  $('pName').textContent = person.name;
+
+  $('pProfileFields').innerHTML = `
+    <div class="field-row"><span class="field-icon">📱</span><div class="field-info"><div class="field-lbl">Phone Number</div><div class="field-val">${phone}</div></div></div>
+    <div class="field-row"><span class="field-icon">📧</span><div class="field-info"><div class="field-lbl">Email Address</div><div class="field-val">${email}</div></div></div>
+    <div class="field-row"><span class="field-icon">🎂</span><div class="field-info"><div class="field-lbl">Date of Birth</div><div class="field-val">${dob.formatted}</div></div></div>
+    <div class="field-row"><span class="field-icon">${animal.emoji}</span><div class="field-info"><div class="field-lbl">Favourite Animal</div><div class="field-val">${animal.name} ${animal.emoji}</div></div></div>
+    <div class="field-row"><span class="field-icon">${color.emoji}</span><div class="field-info"><div class="field-lbl">Favourite Colour</div><div class="field-val">${color.name} ${color.emoji}</div></div></div>
+    <div class="field-row"><span class="field-icon">⭐</span><div class="field-info"><div class="field-lbl">Hobby / Interest</div><div class="field-val">${hobby}</div></div></div>
+  `;
+}
+
+function pRenderOptions(options) {
+  const container = $('pwOptionsList');
+  container.innerHTML = '';
+  options.forEach((opt, i) => {
+    const card = document.createElement('div');
+    card.className = 'pw-card';
+    card.innerHTML = `
+      <div class="pw-badge">${String.fromCharCode(65 + i)}</div>
+      <div class="pw-text">${opt.password}</div>
+      <span class="pw-indicator ck">✅</span>
+      <span class="pw-indicator cr">❌</span>
+    `;
+    card.addEventListener('click', () => pCheckAnswer(i, card));
+    container.appendChild(card);
+  });
+}
+
+function pCheckAnswer(idx, card) {
+  if (pAnswered) return;
+  const fb = $('pwFeedback');
+  const allCards = document.querySelectorAll('.pw-card');
+
+  if (idx === pCorrectIndex) {
+    pAnswered = true;
+    card.classList.add('correct');
+    allCards.forEach(c => { if (c !== card) c.classList.add('disabled'); });
+
+    pScore += 10;
+    pStreak++;
+    addGlobalScore(10);
+    pUpdateStats();
+
+    fb.className = 'pw-feedback show success';
+    fb.innerHTML = `<span>🎉 Correct! +10 Points!</span><div class="p-fe">${pExplanation}</div>`;
+
+    SFX.correct();
+    launchConfetti();
+
+    // Flash profile rows
+    document.querySelectorAll('.field-row').forEach((row, i) => {
+      setTimeout(() => row.classList.add('highlight-flash'), i * 140);
+      setTimeout(() => row.classList.remove('highlight-flash'), 1500 + i * 140);
+    });
+
+    $('pwNextBtn').classList.add('show');
+
+    // Campaign check: after 3 rounds in campaign, show grand victory!
+    if (isCampaignMode && pRound >= 3) {
+      setTimeout(() => {
+        $('grandScoreDisplay').textContent = `Total Campaign Points: ${globalTotalScore} 🌟`;
+        $('modalGrandTrophy').classList.add('show');
+      }, 1200);
+    }
+  } else {
+    card.classList.add('wrong');
+    setTimeout(() => card.classList.remove('wrong'), 550);
+    pStreak = 0;
+    pUpdateStats();
+
+    fb.className = 'pw-feedback show error';
+    fb.innerHTML = `<span>❌ Not quite! Look closer at the personal profile.</span><div class="p-fe">Hint: Cross-reference the name, animal, phone digits, or birth year.</div>`;
+    SFX.wrong();
+  }
+}
+
+function pUpdateStats() {
+  $('psScore').textContent = pScore;
+  $('psRound').textContent = pRound;
+  $('psStreak').textContent = `${pStreak} 🔥`;
+  $('psStreakFill').style.width = `${Math.min(pStreak * 20, 100)}%`;
+}
+
+function pNextRound() {
+  pRound++;
+  pAnswered = false;
+  $('pwFeedback').className = 'pw-feedback';
+  $('pwNextBtn').classList.remove('show');
+
+  $('pProfileCard').style.animation = 'none';
+  void $('pProfileCard').offsetHeight;
+  $('pProfileCard').style.animation = 'popIn 0.35s ease-out';
+
+  $('pwTipText').innerHTML = pick(P_TIPS);
+  pStartRound();
+}
+
+function pStartRound() {
+  pStarted = true;
+  const prof = pGenerateProfile();
+  const opts = pGeneratePasswords(prof);
+  pRenderProfile(prof);
+  pRenderOptions(opts);
+  pUpdateStats();
+}
+
+// ── Global Keyboard Shortcuts ──
+document.addEventListener('keydown', e => {
+  if (!$('viewVirus').classList.contains('hidden')) {
+    const k = e.key.toLowerCase();
+    if (k === '1' || k === 'a') vSelectTool('antivirus');
+    else if (k === '2' || k === 'f') vSelectTool('firewall');
+    else if (k === '3' || k === 'r') vSelectTool('freeze');
+    else if (k === '4' || k === 'c') vSelectTool('cleaner');
+  }
+  if (e.key === 'Escape') {
+    closeModals();
+    switchView('hub');
+  }
+});
+</script>
+</body>
+</html>
